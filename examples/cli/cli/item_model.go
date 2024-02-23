@@ -8,8 +8,8 @@ package cli
 import (
 	"fmt"
 
-	"github.com/go-swagger/go-swagger/examples/cli/models"
 	"github.com/spf13/cobra"
+	"github.com/thetreep/go-swagger/examples/cli/models"
 )
 
 // Schema cli for Item

@@ -15,8 +15,8 @@ import (
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/runtime/middleware"
 
-	"github.com/go-swagger/go-swagger/examples/file-server/restapi/operations"
-	"github.com/go-swagger/go-swagger/examples/file-server/restapi/operations/uploads"
+	"github.com/thetreep/go-swagger/examples/file-server/restapi/operations"
+	"github.com/thetreep/go-swagger/examples/file-server/restapi/operations/uploads"
 )
 
 //go:generate swagger generate server --target ../../file-server --name FileUpload --spec ../swagger.yml --principal interface{}
@@ -53,39 +53,41 @@ func configureAPI(api *operations.FileUploadAPI) http.Handler {
 	}
 	uploadCounter := 0
 
-	api.UploadsUploadFileHandler = uploads.UploadFileHandlerFunc(func(params uploads.UploadFileParams) middleware.Responder {
+	api.UploadsUploadFileHandler = uploads.UploadFileHandlerFunc(
+		func(params uploads.UploadFileParams) middleware.Responder {
 
-		if params.File == nil {
-			return middleware.Error(404, fmt.Errorf("no file provided"))
-		}
-		defer func() {
-			_ = params.File.Close()
-		}()
+			if params.File == nil {
+				return middleware.Error(404, fmt.Errorf("no file provided"))
+			}
+			defer func() {
+				_ = params.File.Close()
+			}()
 
-		if namedFile, ok := params.File.(*runtime.File); ok {
-			log.Printf("received file name: %s", namedFile.Header.Filename)
-			log.Printf("received file size: %d", namedFile.Header.Size)
-		}
+			if namedFile, ok := params.File.(*runtime.File); ok {
+				log.Printf("received file name: %s", namedFile.Header.Filename)
+				log.Printf("received file size: %d", namedFile.Header.Size)
+			}
 
-		// uploads file and save it locally
-		filename := path.Join(uploadFolder, fmt.Sprintf("uploaded_file_%d.dat", uploadCounter))
-		uploadCounter++
-		f, err := os.OpenFile(filename, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0600)
-		if err != nil {
-			return middleware.Error(500, fmt.Errorf("could not create file on server"))
-		}
+			// uploads file and save it locally
+			filename := path.Join(uploadFolder, fmt.Sprintf("uploaded_file_%d.dat", uploadCounter))
+			uploadCounter++
+			f, err := os.OpenFile(filename, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0600)
+			if err != nil {
+				return middleware.Error(500, fmt.Errorf("could not create file on server"))
+			}
 
-		n, err := io.Copy(f, params.File)
-		if err != nil {
-			return middleware.Error(500, fmt.Errorf("could not upload file on server"))
-		}
+			n, err := io.Copy(f, params.File)
+			if err != nil {
+				return middleware.Error(500, fmt.Errorf("could not upload file on server"))
+			}
 
-		log.Printf("copied bytes %d", n)
+			log.Printf("copied bytes %d", n)
 
-		log.Printf("file uploaded copied as %s", filename)
+			log.Printf("file uploaded copied as %s", filename)
 
-		return uploads.NewUploadFileOK()
-	})
+			return uploads.NewUploadFileOK()
+		},
+	)
 
 	api.PreServerShutdown = func() {}
 

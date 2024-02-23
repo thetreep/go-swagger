@@ -10,8 +10,8 @@ import (
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/runtime/middleware"
 
-	"github.com/go-swagger/go-swagger/examples/todo-list/restapi/operations"
-	"github.com/go-swagger/go-swagger/examples/todo-list/restapi/operations/todos"
+	"github.com/thetreep/go-swagger/examples/todo-list/restapi/operations"
+	"github.com/thetreep/go-swagger/examples/todo-list/restapi/operations/todos"
 )
 
 //go:generate swagger generate server --target ../../todo-list --name TodoList --spec ../swagger.yml --principal interface{}
@@ -54,24 +54,32 @@ func configureAPI(api *operations.TodoListAPI) http.Handler {
 	// todos.FindMaxParseMemory = 32 << 20
 
 	if api.TodosAddOneHandler == nil {
-		api.TodosAddOneHandler = todos.AddOneHandlerFunc(func(params todos.AddOneParams, principal interface{}) middleware.Responder {
-			return middleware.NotImplemented("operation todos.AddOne has not yet been implemented")
-		})
+		api.TodosAddOneHandler = todos.AddOneHandlerFunc(
+			func(params todos.AddOneParams, principal interface{}) middleware.Responder {
+				return middleware.NotImplemented("operation todos.AddOne has not yet been implemented")
+			},
+		)
 	}
 	if api.TodosDestroyOneHandler == nil {
-		api.TodosDestroyOneHandler = todos.DestroyOneHandlerFunc(func(params todos.DestroyOneParams, principal interface{}) middleware.Responder {
-			return middleware.NotImplemented("operation todos.DestroyOne has not yet been implemented")
-		})
+		api.TodosDestroyOneHandler = todos.DestroyOneHandlerFunc(
+			func(params todos.DestroyOneParams, principal interface{}) middleware.Responder {
+				return middleware.NotImplemented("operation todos.DestroyOne has not yet been implemented")
+			},
+		)
 	}
 	if api.TodosFindHandler == nil {
-		api.TodosFindHandler = todos.FindHandlerFunc(func(params todos.FindParams, principal interface{}) middleware.Responder {
-			return middleware.NotImplemented("operation todos.Find has not yet been implemented")
-		})
+		api.TodosFindHandler = todos.FindHandlerFunc(
+			func(params todos.FindParams, principal interface{}) middleware.Responder {
+				return middleware.NotImplemented("operation todos.Find has not yet been implemented")
+			},
+		)
 	}
 	if api.TodosUpdateOneHandler == nil {
-		api.TodosUpdateOneHandler = todos.UpdateOneHandlerFunc(func(params todos.UpdateOneParams, principal interface{}) middleware.Responder {
-			return middleware.NotImplemented("operation todos.UpdateOne has not yet been implemented")
-		})
+		api.TodosUpdateOneHandler = todos.UpdateOneHandlerFunc(
+			func(params todos.UpdateOneParams, principal interface{}) middleware.Responder {
+				return middleware.NotImplemented("operation todos.UpdateOne has not yet been implemented")
+			},
+		)
 	}
 
 	api.PreServerShutdown = func() {}

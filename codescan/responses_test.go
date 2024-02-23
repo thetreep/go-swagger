@@ -20,7 +20,18 @@ func getResponse(sctx *scanCtx, nm string) *entityDecl {
 func TestParseResponses(t *testing.T) {
 	sctx := loadClassificationPkgsCtx(t)
 	responses := make(map[string]spec.Response)
-	for _, rn := range []string{"ComplexerOne", "SimpleOnes", "SimpleOnesFunc", "ComplexerPointerOne", "SomeResponse", "ValidationError", "Resp", "FileResponse", "GenericError", "ValidationError"} {
+	for _, rn := range []string{
+		"ComplexerOne",
+		"SimpleOnes",
+		"SimpleOnesFunc",
+		"ComplexerPointerOne",
+		"SomeResponse",
+		"ValidationError",
+		"Resp",
+		"FileResponse",
+		"GenericError",
+		"ValidationError",
+	} {
 		td := getResponse(sctx, rn)
 		prs := &responseBuilder{
 			ctx:  sctx,
@@ -98,7 +109,11 @@ func TestParseResponses(t *testing.T) {
 	for k, header := range res.Headers {
 		switch k {
 		case "id":
-			assert.Equal(t, "ID of this some response instance.\nids in this application start at 11 and are smaller than 1000", header.Description)
+			assert.Equal(
+				t,
+				"ID of this some response instance.\nids in this application start at 11 and are smaller than 1000",
+				header.Description,
+			)
 			assert.Equal(t, "integer", header.Type)
 			assert.Equal(t, "int64", header.Format)
 			// assert.Equal(t, "ID", header.Extensions["x-go-name"])
@@ -264,9 +279,11 @@ func TestParseResponses_Issue2011(t *testing.T) {
 }
 
 func TestParseResponses_Issue2145(t *testing.T) {
-	sctx, err := newScanCtx(&Options{
-		Packages: []string{"github.com/go-swagger/go-swagger/fixtures/goparsing/product/..."},
-	})
+	sctx, err := newScanCtx(
+		&Options{
+			Packages: []string{"github.com/thetreep/go-swagger/fixtures/goparsing/product/..."},
+		},
+	)
 	require.NoError(t, err)
 	responses := make(map[string]spec.Response)
 	td := getResponse(sctx, "GetProductsResponse")

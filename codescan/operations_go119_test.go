@@ -9,11 +9,13 @@ import (
 )
 
 func TestIndentedYAMLBlock(t *testing.T) {
-	sctx, err := newScanCtx(&Options{
-		Packages: []string{
-			"github.com/go-swagger/go-swagger/fixtures/goparsing/go119",
+	sctx, err := newScanCtx(
+		&Options{
+			Packages: []string{
+				"github.com/thetreep/go-swagger/fixtures/goparsing/go119",
+			},
 		},
-	})
+	)
 	require.NoError(t, err)
 	var ops spec.Paths
 	for _, apiPath := range sctx.app.Operations {

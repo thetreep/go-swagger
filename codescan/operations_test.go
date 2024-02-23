@@ -15,14 +15,16 @@ func TestOperationsExpression(t *testing.T) {
 }
 
 func TestOperationsParser(t *testing.T) {
-	sctx, err := newScanCtx(&Options{
-		Packages: []string{
-			"github.com/go-swagger/go-swagger/fixtures/goparsing/classification",
-			"github.com/go-swagger/go-swagger/fixtures/goparsing/classification/models",
-			"github.com/go-swagger/go-swagger/fixtures/goparsing/classification/operations",
-			"github.com/go-swagger/go-swagger/fixtures/goparsing/classification/operations_annotation",
+	sctx, err := newScanCtx(
+		&Options{
+			Packages: []string{
+				"github.com/thetreep/go-swagger/fixtures/goparsing/classification",
+				"github.com/thetreep/go-swagger/fixtures/goparsing/classification/models",
+				"github.com/thetreep/go-swagger/fixtures/goparsing/classification/operations",
+				"github.com/thetreep/go-swagger/fixtures/goparsing/classification/operations_annotation",
+			},
 		},
-	})
+	)
 	require.NoError(t, err)
 	var ops spec.Paths
 	for _, apiPath := range sctx.app.Operations {
@@ -39,7 +41,8 @@ func TestOperationsParser(t *testing.T) {
 	po, ok := ops.Paths["/pets"]
 	assert.True(t, ok)
 	assert.NotNil(t, po.Get)
-	assertAnnotationOperation(t,
+	assertAnnotationOperation(
+		t,
 		po.Get,
 		"getPet",
 		"",
@@ -59,7 +62,8 @@ func TestOperationsParser(t *testing.T) {
 	po, ok = ops.Paths["/pets/{id}"]
 	assert.True(t, ok)
 	assert.NotNil(t, po.Put)
-	assertAnnotationOperation(t,
+	assertAnnotationOperation(
+		t,
 		po.Put,
 		"updatePet",
 		"Updates the details for a pet.",
@@ -84,7 +88,8 @@ func TestOperationsParser(t *testing.T) {
 	po, ok = ops.Paths["/v1/events"]
 	assert.True(t, ok)
 	assert.NotNil(t, po.Get)
-	assertAnnotationOperation(t,
+	assertAnnotationOperation(
+		t,
 		po.Get,
 		"getEvents",
 		"Events",

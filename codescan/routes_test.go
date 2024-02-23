@@ -33,7 +33,8 @@ func TestRoutesParser(t *testing.T) {
 	ext.Add("x-some-flag", "true")
 	assert.True(t, ok)
 	assert.NotNil(t, po.Get)
-	assertOperation(t,
+	assertOperation(
+		t,
 		po.Get,
 		"listPets",
 		"Lists pets filtered by some parameters.",
@@ -42,7 +43,8 @@ func TestRoutesParser(t *testing.T) {
 		[]string{"read", "write"},
 		ext,
 	)
-	assertOperation(t,
+	assertOperation(
+		t,
 		po.Post,
 		"createPet",
 		"Create a pet based on the parameters.",
@@ -56,18 +58,21 @@ func TestRoutesParser(t *testing.T) {
 	ext = make(spec.Extensions)
 	ext.Add("x-some-flag", "false")
 	ext.Add("x-some-list", []string{"item1", "item2", "item3"})
-	ext.Add("x-some-object", map[string]interface{}{
-		"key1": "value1",
-		"key2": "value2",
-		"subobject": map[string]interface{}{
-			"subkey1": "subvalue1",
-			"subkey2": "subvalue2",
+	ext.Add(
+		"x-some-object", map[string]interface{}{
+			"key1": "value1",
+			"key2": "value2",
+			"subobject": map[string]interface{}{
+				"subkey1": "subvalue1",
+				"subkey2": "subvalue2",
+			},
+			"key3": "value3",
 		},
-		"key3": "value3",
-	})
+	)
 	assert.True(t, ok)
 	assert.NotNil(t, po.Get)
-	assertOperation(t,
+	assertOperation(
+		t,
 		po.Get,
 		"listOrders",
 		"lists orders filtered by some parameters.",
@@ -76,7 +81,8 @@ func TestRoutesParser(t *testing.T) {
 		[]string{"orders:read", "https://www.googleapis.com/auth/userinfo.email"},
 		ext,
 	)
-	assertOperation(t,
+	assertOperation(
+		t,
 		po.Post,
 		"createOrder",
 		"create an order based on the parameters.",
@@ -89,7 +95,8 @@ func TestRoutesParser(t *testing.T) {
 	po, ok = ops.Paths["/orders/{id}"]
 	assert.True(t, ok)
 	assert.NotNil(t, po.Get)
-	assertOperation(t,
+	assertOperation(
+		t,
 		po.Get,
 		"orderDetails",
 		"gets the details for an order.",
@@ -99,7 +106,8 @@ func TestRoutesParser(t *testing.T) {
 		nil,
 	)
 
-	assertOperation(t,
+	assertOperation(
+		t,
 		po.Put,
 		"updateOrder",
 		"Update the details for an order.",
@@ -109,7 +117,8 @@ func TestRoutesParser(t *testing.T) {
 		nil,
 	)
 
-	assertOperation(t,
+	assertOperation(
+		t,
 		po.Delete,
 		"deleteOrder",
 		"delete a particular order.",
@@ -127,14 +136,16 @@ func TestRoutesParser(t *testing.T) {
 }
 
 func TestRoutesParserBody(t *testing.T) {
-	sctx, err := newScanCtx(&Options{
-		Packages: []string{
-			"github.com/go-swagger/go-swagger/fixtures/goparsing/classification",
-			"github.com/go-swagger/go-swagger/fixtures/goparsing/classification/models",
-			"github.com/go-swagger/go-swagger/fixtures/goparsing/classification/operations",
-			"github.com/go-swagger/go-swagger/fixtures/goparsing/classification/operations_body",
+	sctx, err := newScanCtx(
+		&Options{
+			Packages: []string{
+				"github.com/thetreep/go-swagger/fixtures/goparsing/classification",
+				"github.com/thetreep/go-swagger/fixtures/goparsing/classification/models",
+				"github.com/thetreep/go-swagger/fixtures/goparsing/classification/operations",
+				"github.com/thetreep/go-swagger/fixtures/goparsing/classification/operations_body",
+			},
 		},
-	})
+	)
 	require.NoError(t, err)
 	var ops spec.Paths
 	for _, apiPath := range sctx.app.Routes {
@@ -151,7 +162,8 @@ func TestRoutesParserBody(t *testing.T) {
 	po, ok := ops.Paths["/pets"]
 	assert.True(t, ok)
 	assert.NotNil(t, po.Get)
-	assertOperationBody(t,
+	assertOperationBody(
+		t,
 		po.Get,
 		"listPets",
 		"Lists pets filtered by some parameters.",
@@ -161,7 +173,8 @@ func TestRoutesParserBody(t *testing.T) {
 	)
 	assert.NotNil(t, po.Post)
 
-	assertOperationBody(t,
+	assertOperationBody(
+		t,
 		po.Post,
 		"createPet",
 		"Create a pet based on the parameters.",
@@ -173,7 +186,8 @@ func TestRoutesParserBody(t *testing.T) {
 	po, ok = ops.Paths["/orders"]
 	assert.True(t, ok)
 	assert.NotNil(t, po.Get)
-	assertOperationBody(t,
+	assertOperationBody(
+		t,
 		po.Get,
 		"listOrders",
 		"lists orders filtered by some parameters.",
@@ -183,7 +197,8 @@ func TestRoutesParserBody(t *testing.T) {
 	)
 	assert.NotNil(t, po.Post)
 
-	assertOperationBody(t,
+	assertOperationBody(
+		t,
 		po.Post,
 		"createOrder",
 		"create an order based on the parameters.",
@@ -195,7 +210,8 @@ func TestRoutesParserBody(t *testing.T) {
 	po, ok = ops.Paths["/orders/{id}"]
 	assert.True(t, ok)
 	assert.NotNil(t, po.Get)
-	assertOperationBody(t,
+	assertOperationBody(
+		t,
 		po.Get,
 		"orderDetails",
 		"gets the details for an order.",
@@ -204,7 +220,8 @@ func TestRoutesParserBody(t *testing.T) {
 		[]string{"read", "write"},
 	)
 
-	assertOperationBody(t,
+	assertOperationBody(
+		t,
 		po.Put,
 		"updateOrder",
 		"Update the details for an order.",
@@ -213,7 +230,8 @@ func TestRoutesParserBody(t *testing.T) {
 		[]string{"read", "write"},
 	)
 
-	assertOperationBody(t,
+	assertOperationBody(
+		t,
 		po.Delete,
 		"deleteOrder",
 		"delete a particular order.",

@@ -302,7 +302,7 @@ func TestTemplates_DefinitionTargetImportPath(t *testing.T) {
 	opts := opts()
 	// Non existing target would panic: to be tested too, but in another module
 	opts.Target = "../fixtures"
-	expected := "github.com/go-swagger/go-swagger/fixtures"
+	expected := "github.com/thetreep/go-swagger/fixtures"
 
 	// executes template against model definitions
 	genModel, err := getModelEnvironment("../fixtures/codegen/todolist.models.yml", opts)
@@ -403,8 +403,12 @@ func TestTemplates_FuncMap(t *testing.T) {
 	assert.Contains(t, rendered.String(), "DoesNotContainString=false\n")
 	assert.Contains(t, rendered.String(), "PadSurround1=-,-,-,padme,-,-,-,-,-,-,-,-\n")
 	assert.Contains(t, rendered.String(), "PadSurround2=padme,-,-,-,-,-,-,-,-,-,-,-\n")
-	assert.Contains(t, rendered.String(), `Json={"errors":"github.com/go-openapi/errors","runtime":"github.com/go-openapi/runtime","strfmt":"github.com/go-openapi/strfmt","swag":"github.com/go-openapi/swag","validate":"github.com/go-openapi/validate"}`)
-	assert.Contains(t, rendered.String(), "\"TargetImportPath\": \"github.com/go-swagger/go-swagger/generator\"")
+	assert.Contains(
+		t,
+		rendered.String(),
+		`Json={"errors":"github.com/go-openapi/errors","runtime":"github.com/go-openapi/runtime","strfmt":"github.com/go-openapi/strfmt","swag":"github.com/go-openapi/swag","validate":"github.com/go-openapi/validate"}`,
+	)
+	assert.Contains(t, rendered.String(), "\"TargetImportPath\": \"github.com/thetreep/go-swagger/generator\"")
 	assert.Contains(t, rendered.String(), "Snakize1=ending_in_os_name_linux_swagger\n")
 	assert.Contains(t, rendered.String(), "Snakize2=ending_in_arch_name_linux_amd64_swagger\n")
 	assert.Contains(t, rendered.String(), "Snakize3=ending_in_test_swagger\n")
@@ -509,14 +513,16 @@ func TestTemplates_LoadContrib(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			err := templates.LoadContrib(tt.template)
-			if tt.wantError {
-				require.Error(t, err)
-			} else {
-				require.NoError(t, err)
-			}
-		})
+		t.Run(
+			tt.name, func(t *testing.T) {
+				err := templates.LoadContrib(tt.template)
+				if tt.wantError {
+					require.Error(t, err)
+				} else {
+					require.NoError(t, err)
+				}
+			},
+		)
 	}
 }
 
@@ -580,17 +586,21 @@ func TestFuncMap_AsJSON(t *testing.T) {
 		asJSON,
 		asPrettyJSON,
 	} {
-		res, err := jsonFunc(struct {
-			A string `json:"a"`
-			B int
-		}{A: "good", B: 3})
+		res, err := jsonFunc(
+			struct {
+				A string `json:"a"`
+				B int
+			}{A: "good", B: 3},
+		)
 		require.NoError(t, err)
 		assert.JSONEq(t, `{"a":"good","B":3}`, res)
 
-		_, err = jsonFunc(struct {
-			A string `json:"a"`
-			B func() string
-		}{A: "good", B: func() string { return "" }})
+		_, err = jsonFunc(
+			struct {
+				A string `json:"a"`
+				B func() string
+			}{A: "good", B: func() string { return "" }},
+		)
 		require.Error(t, err)
 	}
 }
@@ -672,7 +682,8 @@ Pascalize={{ pascalize . }}
 Camelize={{ camelize . }}
 `
 
-	require.NoError(t,
+	require.NoError(
+		t,
 		templates.AddFile("functpl", tpl),
 	)
 
@@ -680,7 +691,8 @@ Camelize={{ camelize . }}
 	require.NoError(t, err)
 
 	rendered := bytes.NewBuffer(nil)
-	require.NoError(t,
+	require.NoError(
+		t,
 		compiled.Execute(rendered, "get$ref"),
 	)
 

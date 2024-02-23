@@ -9,8 +9,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/go-swagger/go-swagger/cmd/swagger/commands/generate"
 	flags "github.com/jessevdk/go-flags"
+	"github.com/thetreep/go-swagger/cmd/swagger/commands/generate"
 )
 
 func TestGenerateClient(t *testing.T) {
@@ -54,33 +54,35 @@ func TestGenerateClient(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
+		t.Run(
+			tt.name, func(t *testing.T) {
 
-			path := filepath.Join(base, "fixtures/codegen", tt.spec)
-			generated, err := os.MkdirTemp(filepath.Dir(path), "generated")
-			if err != nil {
-				t.Fatalf("TempDir()=%s", generated)
-			}
-			defer func() {
-				_ = os.RemoveAll(generated)
-			}()
-			m := &generate.Client{}
-			_, _ = flags.Parse(m)
-			m.Shared.Spec = flags.Filename(path)
-			m.Shared.Target = flags.Filename(generated)
-			m.Shared.Template = tt.template
+				path := filepath.Join(base, "fixtures/codegen", tt.spec)
+				generated, err := os.MkdirTemp(filepath.Dir(path), "generated")
+				if err != nil {
+					t.Fatalf("TempDir()=%s", generated)
+				}
+				defer func() {
+					_ = os.RemoveAll(generated)
+				}()
+				m := &generate.Client{}
+				_, _ = flags.Parse(m)
+				m.Shared.Spec = flags.Filename(path)
+				m.Shared.Target = flags.Filename(generated)
+				m.Shared.Template = tt.template
 
-			if tt.prepare != nil {
-				tt.prepare(m)
-			}
+				if tt.prepare != nil {
+					tt.prepare(m)
+				}
 
-			err = m.Execute([]string{})
-			if tt.wantError {
-				assert.Error(t, err)
-			} else {
-				assert.NoError(t, err)
-			}
-		})
+				err = m.Execute([]string{})
+				if tt.wantError {
+					assert.Error(t, err)
+				} else {
+					assert.NoError(t, err)
+				}
+			},
+		)
 	}
 }
 

@@ -363,11 +363,13 @@ func TestShared_BadFormatTemplate(t *testing.T) {
 	// TODO: fred refact
 	defer discardOutput()()
 
-	t.Cleanup(func() {
-		_ = os.Remove("test_badformat.gol")
-		_ = os.Remove("test_badformat2.gol")
-		Debug = false
-	})
+	t.Cleanup(
+		func() {
+			_ = os.Remove("test_badformat.gol")
+			_ = os.Remove("test_badformat2.gol")
+			Debug = false
+		},
+	)
 
 	// Not skipping format
 	badFormat := "func x {;;; garbled"
@@ -432,9 +434,11 @@ func TestShared_BadFormatTemplate(t *testing.T) {
 func TestShared_DirectoryTemplate(t *testing.T) {
 	defer discardOutput()()
 
-	t.Cleanup(func() {
-		_ = os.RemoveAll("TestGenDir")
-	})
+	t.Cleanup(
+		func() {
+			_ = os.RemoveAll("TestGenDir")
+		},
+	)
 
 	// Not skipping format
 	content := "func x {}"
@@ -557,33 +561,49 @@ func TestShared_GatherModel(t *testing.T) {
 func TestShared_DumpWrongData(t *testing.T) {
 	defer discardOutput()()
 
-	t.Run("should not be able to dump things that don't marshal as JSON", func(t *testing.T) {
-		require.Error(t, dumpData(struct {
-			A func() string
-			B string
-		}{
-			A: func() string { return "" },
-			B: "xyz",
-		}))
-	})
+	t.Run(
+		"should not be able to dump things that don't marshal as JSON", func(t *testing.T) {
+			require.Error(
+				t, dumpData(
+					struct {
+						A func() string
+						B string
+					}{
+						A: func() string { return "" },
+						B: "xyz",
+					},
+				),
+			)
+		},
+	)
 
-	t.Run("should dump any data, with unmarshallable fields exlicitly excluded", func(t *testing.T) {
-		require.NoError(t, dumpData(struct {
-			A func() string `json:"-"`
-			B string
-		}{
-			A: func() string { return "" },
-			B: "xyz",
-		}))
+	t.Run(
+		"should dump any data, with unmarshallable fields exlicitly excluded", func(t *testing.T) {
+			require.NoError(
+				t, dumpData(
+					struct {
+						A func() string `json:"-"`
+						B string
+					}{
+						A: func() string { return "" },
+						B: "xyz",
+					},
+				),
+			)
 
-		require.NoError(t, dumpData(struct {
-			a func() string
-			B string
-		}{
-			a: func() string { return "" },
-			B: "xyz",
-		}))
-	})
+			require.NoError(
+				t, dumpData(
+					struct {
+						a func() string
+						B string
+					}{
+						a: func() string { return "" },
+						B: "xyz",
+					},
+				),
+			)
+		},
+	)
 }
 
 func TestResolvePrincipal(t *testing.T) {
@@ -614,16 +634,18 @@ func TestResolvePrincipal(t *testing.T) {
 		},
 	} {
 		fixture := toPin
-		t.Run(fixture.Title, func(t *testing.T) {
-			t.Parallel()
-			opts := &GenOpts{GenOptsCommon: GenOptsCommon{Principal: fixture.Principal}}
-			err := opts.EnsureDefaults()
-			require.NoError(t, err)
-			alias, principal, target := opts.resolvePrincipal()
-			require.Equal(t, fixture.Expected[0], alias)
-			require.Equal(t, fixture.Expected[1], principal)
-			require.Equal(t, fixture.Expected[2], target)
-		})
+		t.Run(
+			fixture.Title, func(t *testing.T) {
+				t.Parallel()
+				opts := &GenOpts{GenOptsCommon: GenOptsCommon{Principal: fixture.Principal}}
+				err := opts.EnsureDefaults()
+				require.NoError(t, err)
+				alias, principal, target := opts.resolvePrincipal()
+				require.Equal(t, fixture.Expected[0], alias)
+				require.Equal(t, fixture.Expected[1], principal)
+				require.Equal(t, fixture.Expected[2], target)
+			},
+		)
 	}
 }
 
@@ -637,7 +659,7 @@ func TestDefaultImports(t *testing.T) {
 			Title: "defaults",
 			Opts:  &GenOpts{},
 			Expected: map[string]string{
-				"models": "github.com/go-swagger/go-swagger/generator/models",
+				"models": "github.com/thetreep/go-swagger/generator/models",
 			},
 		},
 		{
@@ -648,8 +670,8 @@ func TestDefaultImports(t *testing.T) {
 				},
 			},
 			Expected: map[string]string{
-				"ext":    "github.com/go-swagger/go-swagger/generator/ext",
-				"models": "github.com/go-swagger/go-swagger/generator/models",
+				"ext":    "github.com/thetreep/go-swagger/generator/ext",
+				"models": "github.com/thetreep/go-swagger/generator/models",
 			},
 		},
 		{
@@ -661,7 +683,7 @@ func TestDefaultImports(t *testing.T) {
 			},
 			Expected: map[string]string{
 				"identity": "github.com/myproject/identity",
-				"models":   "github.com/go-swagger/go-swagger/generator/models",
+				"models":   "github.com/thetreep/go-swagger/generator/models",
 			},
 		},
 		{
@@ -673,7 +695,7 @@ func TestDefaultImports(t *testing.T) {
 			},
 			Expected: map[string]string{
 				"auth":   "github.com/myproject/middleware",
-				"models": "github.com/go-swagger/go-swagger/generator/models",
+				"models": "github.com/thetreep/go-swagger/generator/models",
 			},
 		},
 		{
@@ -685,7 +707,7 @@ func TestDefaultImports(t *testing.T) {
 			},
 			Expected: map[string]string{
 				"auth":   "github.com/myproject/principal",
-				"models": "github.com/go-swagger/go-swagger/generator/models",
+				"models": "github.com/thetreep/go-swagger/generator/models",
 			},
 		},
 		{
@@ -696,7 +718,7 @@ func TestDefaultImports(t *testing.T) {
 				},
 			},
 			Expected: map[string]string{
-				"bespoke": "github.com/go-swagger/go-swagger/generator/target/bespoke",
+				"bespoke": "github.com/thetreep/go-swagger/generator/target/bespoke",
 			},
 		},
 		{
@@ -720,8 +742,8 @@ func TestDefaultImports(t *testing.T) {
 				},
 			},
 			Expected: map[string]string{
-				"bespoke": "github.com/go-swagger/go-swagger/generator/target/bespoke",
-				"auth":    "github.com/go-swagger/go-swagger/generator/auth",
+				"bespoke": "github.com/thetreep/go-swagger/generator/target/bespoke",
+				"auth":    "github.com/thetreep/go-swagger/generator/auth",
 			},
 		},
 		{
@@ -733,7 +755,7 @@ func TestDefaultImports(t *testing.T) {
 				},
 			},
 			Expected: map[string]string{
-				"bespoke": "github.com/go-swagger/go-swagger/generator/target/bespoke",
+				"bespoke": "github.com/thetreep/go-swagger/generator/target/bespoke",
 			},
 		},
 		{
@@ -745,7 +767,7 @@ func TestDefaultImports(t *testing.T) {
 				},
 			},
 			Expected: map[string]string{
-				"bespoke": "github.com/go-swagger/go-swagger/generator/target/bespoke",
+				"bespoke": "github.com/thetreep/go-swagger/generator/target/bespoke",
 			},
 		},
 		{
@@ -758,20 +780,22 @@ func TestDefaultImports(t *testing.T) {
 				},
 			},
 			Expected: map[string]string{
-				"models": "github.com/go-swagger/go-swagger/generator/target/models",
+				"models": "github.com/thetreep/go-swagger/generator/target/models",
 				"auth":   "target/auth",
 			},
 		},
 	} {
 		fixture := toPin
 		i := i
-		t.Run(fixture.Title, func(t *testing.T) {
-			t.Parallel()
-			err := fixture.Opts.EnsureDefaults()
-			require.NoError(t, err)
-			imports := fixture.Opts.defaultImports()
-			require.EqualValuesf(t, fixture.Expected, imports, "unexpected imports generated with fixture %q[%d]", fixture.Title, i)
-		})
+		t.Run(
+			fixture.Title, func(t *testing.T) {
+				t.Parallel()
+				err := fixture.Opts.EnsureDefaults()
+				require.NoError(t, err)
+				imports := fixture.Opts.defaultImports()
+				require.EqualValuesf(t, fixture.Expected, imports, "unexpected imports generated with fixture %q[%d]", fixture.Title, i)
+			},
+		)
 	}
 }
 
@@ -794,27 +818,31 @@ func TestShared_Issue2743(t *testing.T) {
 	defer discardOutput()()
 
 	// acknowledge fix in go-openapi/spec
-	t.Run("should NOT flatten invalid spec that used to work", func(t *testing.T) {
-		specPath := filepath.Join("..", "fixtures", "bugs", "2743", "working", "spec.yaml")
-		_, err := loads.Spec(specPath)
-		require.NoError(t, err)
+	t.Run(
+		"should NOT flatten invalid spec that used to work", func(t *testing.T) {
+			specPath := filepath.Join("..", "fixtures", "bugs", "2743", "working", "spec.yaml")
+			_, err := loads.Spec(specPath)
+			require.NoError(t, err)
 
-		opts := testGenOpts()
-		opts.Spec = specPath
-		opts.ValidateSpec = true
-		_, err = opts.validateAndFlattenSpec()
-		require.Error(t, err)
-	})
+			opts := testGenOpts()
+			opts.Spec = specPath
+			opts.ValidateSpec = true
+			_, err = opts.validateAndFlattenSpec()
+			require.Error(t, err)
+		},
+	)
 
-	t.Run("should flatten valid spec that used NOT to work", func(t *testing.T) {
-		specPath := filepath.Join("..", "fixtures", "bugs", "2743", "not-working", "spec.yaml")
-		_, err := loads.Spec(specPath)
-		require.NoError(t, err)
+	t.Run(
+		"should flatten valid spec that used NOT to work", func(t *testing.T) {
+			specPath := filepath.Join("..", "fixtures", "bugs", "2743", "not-working", "spec.yaml")
+			_, err := loads.Spec(specPath)
+			require.NoError(t, err)
 
-		opts := testGenOpts()
-		opts.Spec = specPath
-		opts.ValidateSpec = true
-		_, err = opts.validateAndFlattenSpec()
-		require.NoError(t, err)
-	})
+			opts := testGenOpts()
+			opts.Spec = specPath
+			opts.ValidateSpec = true
+			_, err = opts.validateAndFlattenSpec()
+			require.NoError(t, err)
+		},
+	)
 }

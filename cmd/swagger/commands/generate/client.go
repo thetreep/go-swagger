@@ -17,7 +17,7 @@ package generate
 import (
 	"log"
 
-	"github.com/go-swagger/go-swagger/generator"
+	"github.com/thetreep/go-swagger/generator"
 )
 
 type clientOptions struct {
@@ -68,7 +68,8 @@ func (c *Client) generate(opts *generator.GenOpts) error {
 }
 
 func (c *Client) log(rp string) {
-	log.Println(`Generation completed!
+	log.Println(
+		`Generation completed!
 
 For this generation to compile you need to have some packages in your go.mod:
 
@@ -77,7 +78,8 @@ For this generation to compile you need to have some packages in your go.mod:
 	* github.com/go-openapi/runtime/client
 	* github.com/go-openapi/strfmt
 
-You can get these now with: go mod tidy`)
+You can get these now with: go mod tidy`,
+	)
 }
 
 // Execute runs this command

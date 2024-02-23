@@ -14,9 +14,9 @@ import (
 	"github.com/go-openapi/loads"
 	"github.com/go-openapi/runtime/middleware"
 
-	"github.com/go-swagger/go-swagger/fixtures/bugs/1472/restapi"
-	"github.com/go-swagger/go-swagger/fixtures/bugs/1472/restapi/operations"
-	"github.com/go-swagger/go-swagger/fixtures/bugs/1472/restapi/operations/ops"
+	"github.com/thetreep/go-swagger/fixtures/bugs/1472/restapi"
+	"github.com/thetreep/go-swagger/fixtures/bugs/1472/restapi/operations"
+	"github.com/thetreep/go-swagger/fixtures/bugs/1472/restapi/operations/ops"
 )
 
 type User struct {
@@ -36,16 +36,21 @@ func TestGenServer_1472_securityFromPrincipal_middleware(t *testing.T) {
 	api.OpsGetEndpointHandler = ops.GetEndpointHandlerFunc(
 		func(params ops.GetEndpointParams, principal interface{}) middleware.Responder {
 			return ops.NewGetEndpointOK()
-		})
+		},
+	)
 
-	apiHandler := api.Serve(func(h http.Handler) http.Handler {
-		return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
-			assert.Nil(t, middleware.SecurityPrincipalFrom(r)) // Did not run through the handler yet!
-			h.ServeHTTP(rw, r)
-			assert.NotNil(t, middleware.SecurityPrincipalFrom(r)) // Should have the principal now!
-			assert.Equal(t, middleware.SecurityPrincipalFrom(r).(*User).ID, "someID")
-		})
-	})
+	apiHandler := api.Serve(
+		func(h http.Handler) http.Handler {
+			return http.HandlerFunc(
+				func(rw http.ResponseWriter, r *http.Request) {
+					assert.Nil(t, middleware.SecurityPrincipalFrom(r)) // Did not run through the handler yet!
+					h.ServeHTTP(rw, r)
+					assert.NotNil(t, middleware.SecurityPrincipalFrom(r)) // Should have the principal now!
+					assert.Equal(t, middleware.SecurityPrincipalFrom(r).(*User).ID, "someID")
+				},
+			)
+		},
+	)
 
 	ts := httptest.NewServer(apiHandler)
 	defer ts.Close()

@@ -14,9 +14,9 @@ import (
 	middleware "github.com/go-openapi/runtime/middleware"
 	"github.com/go-openapi/swag"
 
-	"github.com/go-swagger/go-swagger/examples/tutorials/todo-list/server-complete/models"
-	"github.com/go-swagger/go-swagger/examples/tutorials/todo-list/server-complete/restapi/operations"
-	"github.com/go-swagger/go-swagger/examples/tutorials/todo-list/server-complete/restapi/operations/todos"
+	"github.com/thetreep/go-swagger/examples/tutorials/todo-list/server-complete/models"
+	"github.com/thetreep/go-swagger/examples/tutorials/todo-list/server-complete/restapi/operations"
+	"github.com/thetreep/go-swagger/examples/tutorials/todo-list/server-complete/restapi/operations/todos"
 )
 
 // This file is safe to edit. Once it exists it will not be overwritten
@@ -118,35 +118,43 @@ func configureAPI(api *operations.TodoListAPI) http.Handler {
 
 	api.JSONProducer = runtime.JSONProducer()
 
-	api.TodosAddOneHandler = todos.AddOneHandlerFunc(func(params todos.AddOneParams) middleware.Responder {
-		if err := addItem(params.Body); err != nil {
-			return todos.NewAddOneDefault(500).WithPayload(&models.Error{Code: 500, Message: swag.String(err.Error())})
-		}
-		return todos.NewAddOneCreated().WithPayload(params.Body)
-	})
-	api.TodosDestroyOneHandler = todos.DestroyOneHandlerFunc(func(params todos.DestroyOneParams) middleware.Responder {
-		if err := deleteItem(params.ID); err != nil {
-			return todos.NewDestroyOneDefault(500).WithPayload(&models.Error{Code: 500, Message: swag.String(err.Error())})
-		}
-		return todos.NewDestroyOneNoContent()
-	})
-	api.TodosFindTodosHandler = todos.FindTodosHandlerFunc(func(params todos.FindTodosParams) middleware.Responder {
-		mergedParams := todos.NewFindTodosParams()
-		mergedParams.Since = swag.Int64(0)
-		if params.Since != nil {
-			mergedParams.Since = params.Since
-		}
-		if params.Limit != nil {
-			mergedParams.Limit = params.Limit
-		}
-		return todos.NewFindTodosOK().WithPayload(allItems(*mergedParams.Since, *mergedParams.Limit))
-	})
-	api.TodosUpdateOneHandler = todos.UpdateOneHandlerFunc(func(params todos.UpdateOneParams) middleware.Responder {
-		if err := updateItem(params.ID, params.Body); err != nil {
-			return todos.NewUpdateOneDefault(500).WithPayload(&models.Error{Code: 500, Message: swag.String(err.Error())})
-		}
-		return todos.NewUpdateOneOK().WithPayload(params.Body)
-	})
+	api.TodosAddOneHandler = todos.AddOneHandlerFunc(
+		func(params todos.AddOneParams) middleware.Responder {
+			if err := addItem(params.Body); err != nil {
+				return todos.NewAddOneDefault(500).WithPayload(&models.Error{Code: 500, Message: swag.String(err.Error())})
+			}
+			return todos.NewAddOneCreated().WithPayload(params.Body)
+		},
+	)
+	api.TodosDestroyOneHandler = todos.DestroyOneHandlerFunc(
+		func(params todos.DestroyOneParams) middleware.Responder {
+			if err := deleteItem(params.ID); err != nil {
+				return todos.NewDestroyOneDefault(500).WithPayload(&models.Error{Code: 500, Message: swag.String(err.Error())})
+			}
+			return todos.NewDestroyOneNoContent()
+		},
+	)
+	api.TodosFindTodosHandler = todos.FindTodosHandlerFunc(
+		func(params todos.FindTodosParams) middleware.Responder {
+			mergedParams := todos.NewFindTodosParams()
+			mergedParams.Since = swag.Int64(0)
+			if params.Since != nil {
+				mergedParams.Since = params.Since
+			}
+			if params.Limit != nil {
+				mergedParams.Limit = params.Limit
+			}
+			return todos.NewFindTodosOK().WithPayload(allItems(*mergedParams.Since, *mergedParams.Limit))
+		},
+	)
+	api.TodosUpdateOneHandler = todos.UpdateOneHandlerFunc(
+		func(params todos.UpdateOneParams) middleware.Responder {
+			if err := updateItem(params.ID, params.Body); err != nil {
+				return todos.NewUpdateOneDefault(500).WithPayload(&models.Error{Code: 500, Message: swag.String(err.Error())})
+			}
+			return todos.NewUpdateOneOK().WithPayload(params.Body)
+		},
+	)
 
 	api.ServerShutdown = func() {}
 	println(exampleFlags.Example1)

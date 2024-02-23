@@ -57,146 +57,194 @@ func Test_GenerateClient(t *testing.T) {
 
 	const clientName = "test"
 
-	t.Run("exercise codegen safeguards", func(t *testing.T) {
-		t.Run("should fail on nil options", func(t *testing.T) {
-			require.Error(t,
-				GenerateClient(clientName, []string{"model1"}, []string{"op1", "op2"}, nil),
+	t.Run(
+		"exercise codegen safeguards", func(t *testing.T) {
+			t.Run(
+				"should fail on nil options", func(t *testing.T) {
+					require.Error(
+						t,
+						GenerateClient(clientName, []string{"model1"}, []string{"op1", "op2"}, nil),
+					)
+				},
 			)
-		})
 
-		t.Run("should fail on invalid templates location (1)", func(t *testing.T) {
-			opts := testClientGenOpts()
-			opts.TemplateDir = "dir/nowhere"
-			require.Error(t,
-				GenerateClient(clientName, []string{"model1"}, []string{"op1", "op2"}, opts),
+			t.Run(
+				"should fail on invalid templates location (1)", func(t *testing.T) {
+					opts := testClientGenOpts()
+					opts.TemplateDir = "dir/nowhere"
+					require.Error(
+						t,
+						GenerateClient(clientName, []string{"model1"}, []string{"op1", "op2"}, opts),
+					)
+				},
 			)
-		})
 
-		t.Run("should fail on invalid templates location (2)", func(t *testing.T) {
-			opts := testClientGenOpts()
-			opts.TemplateDir = "http://nowhere.com"
-			require.Error(t,
-				GenerateClient(clientName, []string{"model1"}, []string{"op1", "op2"}, opts),
+			t.Run(
+				"should fail on invalid templates location (2)", func(t *testing.T) {
+					opts := testClientGenOpts()
+					opts.TemplateDir = "http://nowhere.com"
+					require.Error(
+						t,
+						GenerateClient(clientName, []string{"model1"}, []string{"op1", "op2"}, opts),
+					)
+				},
 			)
-		})
 
-		t.Run("should fail on invalid spec location", func(t *testing.T) {
-			opts := testClientGenOpts()
-			opts.Spec = "dir/nowhere.yaml"
-			require.Error(t,
-				GenerateClient(clientName, []string{"model1"}, []string{"op1", "op2"}, opts),
+			t.Run(
+				"should fail on invalid spec location", func(t *testing.T) {
+					opts := testClientGenOpts()
+					opts.Spec = "dir/nowhere.yaml"
+					require.Error(
+						t,
+						GenerateClient(clientName, []string{"model1"}, []string{"op1", "op2"}, opts),
+					)
+				},
 			)
-		})
 
-		t.Run("should fail on invalid model name", func(t *testing.T) {
-			opts := testClientGenOpts()
-			opts.Spec = basicFixture
-			require.Error(t,
-				GenerateClient(clientName, []string{"model1"}, []string{}, opts),
+			t.Run(
+				"should fail on invalid model name", func(t *testing.T) {
+					opts := testClientGenOpts()
+					opts.Spec = basicFixture
+					require.Error(
+						t,
+						GenerateClient(clientName, []string{"model1"}, []string{}, opts),
+					)
+				},
 			)
-		})
 
-		t.Run("should fail on bad content in spec (HTML, not json)", func(t *testing.T) {
-			opts := testClientGenOpts()
-			opts.Spec = "https://github.com/OAI/OpenAPI-Specification/blob/master/examples/v2.0/json/petstore.json"
-			require.Error(t,
-				GenerateClient(clientName, []string{}, []string{}, opts),
+			t.Run(
+				"should fail on bad content in spec (HTML, not json)", func(t *testing.T) {
+					opts := testClientGenOpts()
+					opts.Spec = "https://github.com/OAI/OpenAPI-Specification/blob/master/examples/v2.0/json/petstore.json"
+					require.Error(
+						t,
+						GenerateClient(clientName, []string{}, []string{}, opts),
+					)
+				},
 			)
-		})
 
-		t.Run("should fail when no valid operation is selected", func(t *testing.T) {
-			opts := testClientGenOpts()
-			opts.Spec = "https://raw.githubusercontent.com/OAI/OpenAPI-Specification/master/examples/v2.0/yaml/petstore.yaml"
-			require.Error(t,
-				GenerateClient(clientName, []string{}, []string{"wrongOperationID"}, opts),
+			t.Run(
+				"should fail when no valid operation is selected", func(t *testing.T) {
+					opts := testClientGenOpts()
+					opts.Spec = "https://raw.githubusercontent.com/OAI/OpenAPI-Specification/master/examples/v2.0/yaml/petstore.yaml"
+					require.Error(
+						t,
+						GenerateClient(clientName, []string{}, []string{"wrongOperationID"}, opts),
+					)
+				},
 			)
-		})
 
-		t.Run("should refuse to generate from garbled parameters", func(t *testing.T) {
-			opts := testClientGenOpts()
-			opts.Spec = filepath.Join("..", "fixtures", "bugs", "2527", "swagger.yml")
-			opts.ValidateSpec = false
-			err := GenerateClient(clientName, []string{}, []string{"GetDeposits"}, opts)
-			require.Error(t, err)
-			require.ErrorContains(t, err, `GET /deposits, "" has an invalid parameter definition`)
-		})
-	})
-
-	t.Run("should generate client", func(t *testing.T) {
-		cwd, err := os.Getwd()
-		require.NoError(t, err)
-
-		t.Run("from remote spec", func(t *testing.T) {
-			opts := testClientGenOpts()
-			opts.Spec = "https://raw.githubusercontent.com/OAI/OpenAPI-Specification/master/examples/v2.0/yaml/petstore.yaml"
-
-			tft, err := os.MkdirTemp(cwd, "generated")
-			require.NoError(t, err)
-			t.Cleanup(func() {
-				_ = os.RemoveAll(tft)
-			})
-
-			opts.Target = tft
-			opts.IsClient = true
-			DefaultSectionOpts(opts)
-
-			t.Cleanup(func() {
-				_ = os.RemoveAll(opts.Target)
-			})
-			require.NoError(t,
-				GenerateClient(clientName, []string{}, []string{}, opts),
+			t.Run(
+				"should refuse to generate from garbled parameters", func(t *testing.T) {
+					opts := testClientGenOpts()
+					opts.Spec = filepath.Join("..", "fixtures", "bugs", "2527", "swagger.yml")
+					opts.ValidateSpec = false
+					err := GenerateClient(clientName, []string{}, []string{"GetDeposits"}, opts)
+					require.Error(t, err)
+					require.ErrorContains(t, err, `GET /deposits, "" has an invalid parameter definition`)
+				},
 			)
-		})
+		},
+	)
 
-		t.Run("from fixed spec (issue #2527)", func(t *testing.T) {
-			opts := testClientGenOpts()
-			opts.Spec = filepath.Join("..", "fixtures", "bugs", "2527", "swagger-fixed.yml")
-
-			tft, err := os.MkdirTemp(cwd, "generated")
-			require.NoError(t, err)
-			t.Cleanup(func() {
-				_ = os.RemoveAll(tft)
-			})
-
-			opts.Target = tft
-			opts.IsClient = true
-			DefaultSectionOpts(opts)
-
-			t.Cleanup(func() {
-				_ = os.RemoveAll(opts.Target)
-			})
-			require.NoError(t,
-				GenerateClient(clientName, []string{}, []string{}, opts),
-			)
-		})
-
-		t.Run("should dump template data", func(t *testing.T) {
-			opts := testClientGenOpts()
-			opts.Spec = "https://raw.githubusercontent.com/OAI/OpenAPI-Specification/master/examples/v2.0/yaml/petstore.yaml"
-
-			origStdout := os.Stdout
-			defer func() {
-				os.Stdout = origStdout
-			}()
-			tgt, err := os.MkdirTemp(cwd, "dumped")
-			require.NoError(t, err)
-			t.Cleanup(func() {
-				_ = os.RemoveAll(tgt)
-			})
-			os.Stdout, err = os.Create(filepath.Join(tgt, "stdout"))
+	t.Run(
+		"should generate client", func(t *testing.T) {
+			cwd, err := os.Getwd()
 			require.NoError(t, err)
 
-			opts.DumpData = true
-			require.NoError(t,
-				GenerateClient(clientName, []string{}, []string{}, opts),
+			t.Run(
+				"from remote spec", func(t *testing.T) {
+					opts := testClientGenOpts()
+					opts.Spec = "https://raw.githubusercontent.com/OAI/OpenAPI-Specification/master/examples/v2.0/yaml/petstore.yaml"
+
+					tft, err := os.MkdirTemp(cwd, "generated")
+					require.NoError(t, err)
+					t.Cleanup(
+						func() {
+							_ = os.RemoveAll(tft)
+						},
+					)
+
+					opts.Target = tft
+					opts.IsClient = true
+					DefaultSectionOpts(opts)
+
+					t.Cleanup(
+						func() {
+							_ = os.RemoveAll(opts.Target)
+						},
+					)
+					require.NoError(
+						t,
+						GenerateClient(clientName, []string{}, []string{}, opts),
+					)
+				},
 			)
-			t.Run("make sure this did not fail and we have some output", func(t *testing.T) {
-				stat, err := os.Stat(filepath.Join(tgt, "stdout"))
-				require.NoError(t, err)
-				require.Greater(t, stat.Size(), int64(0))
-			})
-		})
-	})
+
+			t.Run(
+				"from fixed spec (issue #2527)", func(t *testing.T) {
+					opts := testClientGenOpts()
+					opts.Spec = filepath.Join("..", "fixtures", "bugs", "2527", "swagger-fixed.yml")
+
+					tft, err := os.MkdirTemp(cwd, "generated")
+					require.NoError(t, err)
+					t.Cleanup(
+						func() {
+							_ = os.RemoveAll(tft)
+						},
+					)
+
+					opts.Target = tft
+					opts.IsClient = true
+					DefaultSectionOpts(opts)
+
+					t.Cleanup(
+						func() {
+							_ = os.RemoveAll(opts.Target)
+						},
+					)
+					require.NoError(
+						t,
+						GenerateClient(clientName, []string{}, []string{}, opts),
+					)
+				},
+			)
+
+			t.Run(
+				"should dump template data", func(t *testing.T) {
+					opts := testClientGenOpts()
+					opts.Spec = "https://raw.githubusercontent.com/OAI/OpenAPI-Specification/master/examples/v2.0/yaml/petstore.yaml"
+
+					origStdout := os.Stdout
+					defer func() {
+						os.Stdout = origStdout
+					}()
+					tgt, err := os.MkdirTemp(cwd, "dumped")
+					require.NoError(t, err)
+					t.Cleanup(
+						func() {
+							_ = os.RemoveAll(tgt)
+						},
+					)
+					os.Stdout, err = os.Create(filepath.Join(tgt, "stdout"))
+					require.NoError(t, err)
+
+					opts.DumpData = true
+					require.NoError(
+						t,
+						GenerateClient(clientName, []string{}, []string{}, opts),
+					)
+					t.Run(
+						"make sure this did not fail and we have some output", func(t *testing.T) {
+							stat, err := os.Stat(filepath.Join(tgt, "stdout"))
+							require.NoError(t, err)
+							require.Greater(t, stat.Size(), int64(0))
+						},
+					)
+				},
+			)
+		},
+	)
 }
 
 func assertImports(t testing.TB, baseImport, code string) {
@@ -226,7 +274,7 @@ func TestClient(t *testing.T) {
 	var importBase string
 	if base == "" {
 		base = "."
-		importBase = "github.com/go-swagger/go-swagger/generator/"
+		importBase = "github.com/thetreep/go-swagger/generator/"
 	} else {
 		base = filepath.Join(base, "src")
 		err := os.MkdirAll(base, 0o755)
@@ -235,9 +283,11 @@ func TestClient(t *testing.T) {
 	targetdir, err := os.MkdirTemp(base, "swagger_nogo")
 	require.NoError(t, err, "Failed to create a test target directory: %v", err)
 
-	t.Cleanup(func() {
-		_ = os.RemoveAll(targetdir)
-	})
+	t.Cleanup(
+		func() {
+			_ = os.RemoveAll(targetdir)
+		},
+	)
 
 	tests := []struct {
 		name      string
@@ -347,42 +397,46 @@ func TestClient(t *testing.T) {
 		},
 	}
 
-	t.Run("generate client", func(t *testing.T) {
-		for idx, toPin := range tests {
-			tt := toPin
-			i := idx
-			t.Run(tt.name, func(t *testing.T) {
-				t.Parallel()
-				opts := testClientGenOpts()
-				opts.Spec = basicFixture
-				opts.Target = filepath.Join(targetdir, opts.LanguageOpts.ManglePackageName(tt.name, "client_test"+strconv.Itoa(i)))
-				err := os.MkdirAll(opts.Target, 0o755)
-				require.NoError(t, err)
+	t.Run(
+		"generate client", func(t *testing.T) {
+			for idx, toPin := range tests {
+				tt := toPin
+				i := idx
+				t.Run(
+					tt.name, func(t *testing.T) {
+						t.Parallel()
+						opts := testClientGenOpts()
+						opts.Spec = basicFixture
+						opts.Target = filepath.Join(targetdir, opts.LanguageOpts.ManglePackageName(tt.name, "client_test"+strconv.Itoa(i)))
+						err := os.MkdirAll(opts.Target, 0o755)
+						require.NoError(t, err)
 
-				if tt.spec == "" {
-					opts.Spec = basicFixture
-				} else {
-					opts.Spec = tt.spec
-				}
-				opts.Template = tt.template
+						if tt.spec == "" {
+							opts.Spec = basicFixture
+						} else {
+							opts.Spec = tt.spec
+						}
+						opts.Template = tt.template
 
-				if tt.prepare != nil {
-					tt.prepare(opts)
-				}
+						if tt.prepare != nil {
+							tt.prepare(opts)
+						}
 
-				err = GenerateClient("foo", nil, nil, opts)
-				if tt.wantError {
-					require.Errorf(t, err, "expected an error for client build fixture: %s", opts.Spec)
-				} else {
-					require.NoError(t, err, "unexpected error for client build fixture: %s", opts.Spec)
-				}
+						err = GenerateClient("foo", nil, nil, opts)
+						if tt.wantError {
+							require.Errorf(t, err, "expected an error for client build fixture: %s", opts.Spec)
+						} else {
+							require.NoError(t, err, "unexpected error for client build fixture: %s", opts.Spec)
+						}
 
-				if tt.verify != nil {
-					tt.verify(t, opts.Target)
-				}
-			})
-		}
-	})
+						if tt.verify != nil {
+							tt.verify(t, opts.Target)
+						}
+					},
+				)
+			}
+		},
+	)
 }
 
 func TestGenClient_1518(t *testing.T) {
@@ -406,7 +460,8 @@ func TestGenClient_1518(t *testing.T) {
 	require.NoError(t, err)
 
 	fixtureConfig := map[string][]string{
-		"client/operations/operations_client.go": { // generated file
+		"client/operations/operations_client.go": {
+			// generated file
 			// expected code lines
 			`success, ok := result.(*GetRecords1OK)`,
 			`if ok {`,
@@ -469,7 +524,8 @@ func TestGenClient_2945(t *testing.T) {
 	require.NoError(t, err)
 
 	fixtureConfig := map[string][]string{
-		"client/operations/get_version_responses.go": { // generated file
+		"client/operations/get_version_responses.go": {
+			// generated file
 			// expected code lines
 			`return nil, runtime.NewAPIError("[GET /version] getVersion", response, response.Code())`,
 		},
@@ -506,7 +562,8 @@ func TestGenClient_2471(t *testing.T) {
 	require.NoError(t, err)
 
 	fixtureConfig := map[string][]string{
-		"client/operations/example_post_parameters.go": { // generated file
+		"client/operations/example_post_parameters.go": {
+			// generated file
 			`func (o *ExamplePostParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Registry) error {`,
 			`	if err := r.SetTimeout(o.timeout); err != nil {`,
 			`	joinedFoo := o.bindParamFoo(reg)`,
@@ -575,7 +632,8 @@ func TestGenClient_2096(t *testing.T) {
 	require.NoError(t, err)
 
 	fixtureConfig := map[string][]string{
-		"client/operations/list_resources_parameters.go": { // generated file
+		"client/operations/list_resources_parameters.go": {
+			// generated file
 			`type ListResourcesParams struct {`,
 			`	Fields []string`,
 			`func (o *ListResourcesParams) SetDefaults() {`,
@@ -623,7 +681,8 @@ func TestGenClient_909_3(t *testing.T) {
 	require.NoError(t, err)
 
 	fixtureConfig := map[string][]string{
-		"client/operations/get_optional_parameters.go": { // generated file
+		"client/operations/get_optional_parameters.go": {
+			// generated file
 			`func (o *GetOptionalParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Registry) error {`,
 			`	if err := r.SetTimeout(o.timeout); err != nil {`,
 			`	if o.IsAnOption2 != nil {`,
@@ -733,7 +792,8 @@ func TestGenClient_909_5(t *testing.T) {
 	require.NoError(t, err)
 
 	fixtureConfig := map[string][]string{
-		"client/operations/get_optional_responses.go": { // generated file
+		"client/operations/get_optional_responses.go": {
+			// generated file
 			`func NewGetOptionalOK() *GetOptionalOK {`,
 			`	var (`,
 			`		xIsAnOptionalHeader0Default = strfmt.DateTime{}`,
@@ -909,7 +969,8 @@ func TestGenClient_909_6(t *testing.T) {
 	require.NoError(t, err)
 
 	fixtureConfig := map[string][]string{
-		"client/operations/get_optional_responses.go": { // generated file
+		"client/operations/get_optional_responses.go": {
+			// generated file
 			`func NewGetOptionalOK() *GetOptionalOK {`,
 			`	var (`,
 			`		xaBoolDefault = bool(true)`,
@@ -1192,16 +1253,20 @@ func TestGenClient_2590(t *testing.T) {
 	require.NoError(t, err)
 	opts.Target = tft
 
-	t.Cleanup(func() {
-		_ = os.RemoveAll(tft)
-	})
+	t.Cleanup(
+		func() {
+			_ = os.RemoveAll(tft)
+		},
+	)
 
-	require.NoError(t,
+	require.NoError(
+		t,
 		GenerateClient("client", []string{}, []string{}, opts),
 	)
 
 	fixtureConfig := map[string][]string{
-		"client/abc/create_responses.go": { // generated file
+		"client/abc/create_responses.go": {
+			// generated file
 			// expected code lines
 			`payload, _ := json.Marshal(o.Payload)`,
 			`return fmt.Sprintf("[POST /abc][%d] createAccepted %s", 202, payload)`,
@@ -1234,70 +1299,79 @@ func TestGenClient_2773(t *testing.T) {
 	require.NoError(t, err)
 	opts.Target = tft
 
-	t.Cleanup(func() {
-		_ = os.RemoveAll(tft)
-	})
+	t.Cleanup(
+		func() {
+			_ = os.RemoveAll(tft)
+		},
+	)
 
-	require.NoError(t,
+	require.NoError(
+		t,
 		GenerateClient("client", []string{}, []string{}, opts),
 	)
 
-	t.Run("generated operation should keep content type in the specified order", func(t *testing.T) {
-		fixtureConfig := map[string][]string{
-			"client/uploads/uploads_client.go": { // generated file
-				// expected code lines
-				`ProducesMediaTypes: []string{"application/octet-stream", "application/json"},`,
-				`ConsumesMediaTypes: []string{"multipart/form-data", "application/x-www-form-urlencoded"},`,
-			},
-		}
+	t.Run(
+		"generated operation should keep content type in the specified order", func(t *testing.T) {
+			fixtureConfig := map[string][]string{
+				"client/uploads/uploads_client.go": {
+					// generated file
+					// expected code lines
+					`ProducesMediaTypes: []string{"application/octet-stream", "application/json"},`,
+					`ConsumesMediaTypes: []string{"multipart/form-data", "application/x-www-form-urlencoded"},`,
+				},
+			}
 
-		for fileToInspect, expectedCode := range fixtureConfig {
-			code, err := os.ReadFile(filepath.Join(opts.Target, filepath.FromSlash(fileToInspect)))
-			require.NoError(t, err)
+			for fileToInspect, expectedCode := range fixtureConfig {
+				code, err := os.ReadFile(filepath.Join(opts.Target, filepath.FromSlash(fileToInspect)))
+				require.NoError(t, err)
 
-			for line, codeLine := range expectedCode {
-				if !assertInCode(t, strings.TrimSpace(codeLine), string(code)) {
-					t.Logf("Code expected did not match in codegenfile %s for expected line %d: %q", fileToInspect, line, expectedCode[line])
+				for line, codeLine := range expectedCode {
+					if !assertInCode(t, strings.TrimSpace(codeLine), string(code)) {
+						t.Logf("Code expected did not match in codegenfile %s for expected line %d: %q", fileToInspect, line, expectedCode[line])
+					}
 				}
 			}
-		}
-	})
+		},
+	)
 
-	t.Run("generated operation should have options to set media type", func(t *testing.T) {
-		fixtureConfig := map[string][]string{
-			"client/uploads/uploads_client.go": { // generated file
-				// free mime consumes option
-				`func WithContentType(mime string) ClientOption {`,
-				`	return func(r *runtime.ClientOperation) {`,
-				`	r.ConsumesMediaTypes = []string{mime}`,
-				// shorthand options
-				`func WithContentTypeApplicationJSON(r *runtime.ClientOperation) {`,
-				`	r.ConsumesMediaTypes = []string{"application/json"}`,
-				`func WithContentTypeApplicationxWwwFormUrlencoded(r *runtime.ClientOperation) {`,
-				`	r.ConsumesMediaTypes = []string{"application/x-www-form-urlencoded"}`,
-				`func WithContentTypeMultipartFormData(r *runtime.ClientOperation) {`,
-				`	r.ConsumesMediaTypes = []string{"multipart/form-data"}`,
-				// free mime produces option
-				`func WithAccept(mime string) ClientOption {`,
-				`	return func(r *runtime.ClientOperation) {`,
-				`		r.ProducesMediaTypes = []string{mime}`,
-				// shorthand options
-				`func WithAcceptApplicationJSON(r *runtime.ClientOperation) {`,
-				`	r.ProducesMediaTypes = []string{"application/json"}`,
-				`func WithAcceptApplicationOctetStream(r *runtime.ClientOperation) {`,
-				`	r.ProducesMediaTypes = []string{"application/octet-stream"}`,
-			},
-		}
+	t.Run(
+		"generated operation should have options to set media type", func(t *testing.T) {
+			fixtureConfig := map[string][]string{
+				"client/uploads/uploads_client.go": {
+					// generated file
+					// free mime consumes option
+					`func WithContentType(mime string) ClientOption {`,
+					`	return func(r *runtime.ClientOperation) {`,
+					`	r.ConsumesMediaTypes = []string{mime}`,
+					// shorthand options
+					`func WithContentTypeApplicationJSON(r *runtime.ClientOperation) {`,
+					`	r.ConsumesMediaTypes = []string{"application/json"}`,
+					`func WithContentTypeApplicationxWwwFormUrlencoded(r *runtime.ClientOperation) {`,
+					`	r.ConsumesMediaTypes = []string{"application/x-www-form-urlencoded"}`,
+					`func WithContentTypeMultipartFormData(r *runtime.ClientOperation) {`,
+					`	r.ConsumesMediaTypes = []string{"multipart/form-data"}`,
+					// free mime produces option
+					`func WithAccept(mime string) ClientOption {`,
+					`	return func(r *runtime.ClientOperation) {`,
+					`		r.ProducesMediaTypes = []string{mime}`,
+					// shorthand options
+					`func WithAcceptApplicationJSON(r *runtime.ClientOperation) {`,
+					`	r.ProducesMediaTypes = []string{"application/json"}`,
+					`func WithAcceptApplicationOctetStream(r *runtime.ClientOperation) {`,
+					`	r.ProducesMediaTypes = []string{"application/octet-stream"}`,
+				},
+			}
 
-		for fileToInspect, expectedCode := range fixtureConfig {
-			code, err := os.ReadFile(filepath.Join(opts.Target, filepath.FromSlash(fileToInspect)))
-			require.NoError(t, err)
+			for fileToInspect, expectedCode := range fixtureConfig {
+				code, err := os.ReadFile(filepath.Join(opts.Target, filepath.FromSlash(fileToInspect)))
+				require.NoError(t, err)
 
-			for line, codeLine := range expectedCode {
-				if !assertInCode(t, strings.TrimSpace(codeLine), string(code)) {
-					t.Logf("Code expected did not match in codegenfile %s for expected line %d: %q", fileToInspect, line, expectedCode[line])
+				for line, codeLine := range expectedCode {
+					if !assertInCode(t, strings.TrimSpace(codeLine), string(code)) {
+						t.Logf("Code expected did not match in codegenfile %s for expected line %d: %q", fileToInspect, line, expectedCode[line])
+					}
 				}
 			}
-		}
-	})
+		},
+	)
 }

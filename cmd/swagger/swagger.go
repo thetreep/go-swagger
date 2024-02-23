@@ -19,8 +19,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/go-swagger/go-swagger/cmd/swagger/commands"
 	flags "github.com/jessevdk/go-flags"
+	"github.com/thetreep/go-swagger/cmd/swagger/commands"
 )
 
 var opts struct {
@@ -53,7 +53,12 @@ Swagger tries to support you as best as possible when building APIs.
 
 It aims to represent the contract of your API with a language agnostic description of your application in json or yaml.
 `
-	_, err := parser.AddCommand("validate", "validate the swagger document", "validate the provided swagger document against a swagger spec", &commands.ValidateSpec{})
+	_, err := parser.AddCommand(
+		"validate",
+		"validate the swagger document",
+		"validate the provided swagger document against a swagger spec",
+		&commands.ValidateSpec{},
+	)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -73,22 +78,42 @@ It aims to represent the contract of your API with a language agnostic descripti
 		log.Fatal(err)
 	}
 
-	_, err = parser.AddCommand("expand", "expand $ref fields in a swagger spec", "expands the $refs in a swagger document to inline schemas", &commands.ExpandSpec{})
+	_, err = parser.AddCommand(
+		"expand",
+		"expand $ref fields in a swagger spec",
+		"expands the $refs in a swagger document to inline schemas",
+		&commands.ExpandSpec{},
+	)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	_, err = parser.AddCommand("flatten", "flattens a swagger document", "expand the remote references in a spec and move inline schemas to definitions, after flattening there are no complex inlined anymore", &commands.FlattenSpec{})
+	_, err = parser.AddCommand(
+		"flatten",
+		"flattens a swagger document",
+		"expand the remote references in a spec and move inline schemas to definitions, after flattening there are no complex inlined anymore",
+		&commands.FlattenSpec{},
+	)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	_, err = parser.AddCommand("mixin", "merge swagger documents", "merge additional specs into first/primary spec by copying their paths and definitions", &commands.MixinSpec{})
+	_, err = parser.AddCommand(
+		"mixin",
+		"merge swagger documents",
+		"merge additional specs into first/primary spec by copying their paths and definitions",
+		&commands.MixinSpec{},
+	)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	_, err = parser.AddCommand("diff", "diff swagger documents", "diff specs showing which changes will break existing clients", &commands.DiffCommand{})
+	_, err = parser.AddCommand(
+		"diff",
+		"diff swagger documents",
+		"diff specs showing which changes will break existing clients",
+		&commands.DiffCommand{},
+	)
 	if err != nil {
 		log.Fatal(err)
 	}

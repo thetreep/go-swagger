@@ -10,8 +10,8 @@ import (
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/runtime/middleware"
 
-	"github.com/go-swagger/go-swagger/examples/tutorials/todo-list/server-1/restapi/operations"
-	"github.com/go-swagger/go-swagger/examples/tutorials/todo-list/server-1/restapi/operations/todos"
+	"github.com/thetreep/go-swagger/examples/tutorials/todo-list/server-1/restapi/operations"
+	"github.com/thetreep/go-swagger/examples/tutorials/todo-list/server-1/restapi/operations/todos"
 )
 
 //go:generate swagger generate server --target ../../server-1 --name TodoList --spec ../swagger.yml --principal interface{}
@@ -39,9 +39,11 @@ func configureAPI(api *operations.TodoListAPI) http.Handler {
 	api.JSONProducer = runtime.JSONProducer()
 
 	if api.TodosFindTodosHandler == nil {
-		api.TodosFindTodosHandler = todos.FindTodosHandlerFunc(func(params todos.FindTodosParams) middleware.Responder {
-			return middleware.NotImplemented("operation todos.FindTodos has not yet been implemented")
-		})
+		api.TodosFindTodosHandler = todos.FindTodosHandlerFunc(
+			func(params todos.FindTodosParams) middleware.Responder {
+				return middleware.NotImplemented("operation todos.FindTodos has not yet been implemented")
+			},
+		)
 	}
 
 	api.PreServerShutdown = func() {}

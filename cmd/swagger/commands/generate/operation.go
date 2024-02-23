@@ -18,7 +18,7 @@ import (
 	"errors"
 	"log"
 
-	"github.com/go-swagger/go-swagger/generator"
+	"github.com/thetreep/go-swagger/generator"
 )
 
 type operationOptions struct {
@@ -85,13 +85,15 @@ func (o *Operation) generate(opts *generator.GenOpts) error {
 
 func (o Operation) log(rp string) {
 
-	log.Println(`Generation completed!
+	log.Println(
+		`Generation completed!
 
 For this generation to compile you need to have some packages in your go.mod:
 
 	* github.com/go-openapi/runtime
 
-You can get these now with: go mod tidy`)
+You can get these now with: go mod tidy`,
+	)
 }
 
 // Execute generates a model file

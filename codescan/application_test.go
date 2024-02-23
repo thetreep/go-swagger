@@ -20,9 +20,11 @@ func loadPetstorePkgsCtx(t testing.TB) *scanCtx {
 	if petstoreCtx != nil {
 		return petstoreCtx
 	}
-	sctx, err := newScanCtx(&Options{
-		Packages: []string{"github.com/go-swagger/go-swagger/fixtures/goparsing/petstore/..."},
-	})
+	sctx, err := newScanCtx(
+		&Options{
+			Packages: []string{"github.com/thetreep/go-swagger/fixtures/goparsing/petstore/..."},
+		},
+	)
 	require.NoError(t, err)
 	petstoreCtx = sctx
 	return petstoreCtx
@@ -32,13 +34,17 @@ func loadClassificationPkgsCtx(t testing.TB, extra ...string) *scanCtx {
 	if classificationCtx != nil {
 		return classificationCtx
 	}
-	sctx, err := newScanCtx(&Options{
-		Packages: append([]string{
-			"github.com/go-swagger/go-swagger/fixtures/goparsing/classification",
-			"github.com/go-swagger/go-swagger/fixtures/goparsing/classification/models",
-			"github.com/go-swagger/go-swagger/fixtures/goparsing/classification/operations",
-		}, extra...),
-	})
+	sctx, err := newScanCtx(
+		&Options{
+			Packages: append(
+				[]string{
+					"github.com/thetreep/go-swagger/fixtures/goparsing/classification",
+					"github.com/thetreep/go-swagger/fixtures/goparsing/classification/models",
+					"github.com/thetreep/go-swagger/fixtures/goparsing/classification/operations",
+				}, extra...,
+			),
+		},
+	)
 	require.NoError(t, err)
 	classificationCtx = sctx
 	return classificationCtx
@@ -56,9 +62,11 @@ func TestApplication_LoadCode(t *testing.T) {
 }
 
 func TestAppScanner_NewSpec(t *testing.T) {
-	doc, err := Run(&Options{
-		Packages: []string{"github.com/go-swagger/go-swagger/fixtures/goparsing/petstore/..."},
-	})
+	doc, err := Run(
+		&Options{
+			Packages: []string{"github.com/thetreep/go-swagger/fixtures/goparsing/petstore/..."},
+		},
+	)
 	require.NoError(t, err)
 	if assert.NotNil(t, doc) {
 		// b, _ := json.MarshalIndent(doc.Responses, "", "  ")
@@ -68,10 +76,12 @@ func TestAppScanner_NewSpec(t *testing.T) {
 }
 
 func TestAppScanner_Definitions(t *testing.T) {
-	doc, err := Run(&Options{
-		Packages:   []string{"github.com/go-swagger/go-swagger/fixtures/goparsing/bookings/..."},
-		ScanModels: true,
-	})
+	doc, err := Run(
+		&Options{
+			Packages:   []string{"github.com/thetreep/go-swagger/fixtures/goparsing/bookings/..."},
+			ScanModels: true,
+		},
+	)
 	require.NoError(t, err)
 	if assert.NotNil(t, doc) {
 		_, ok := doc.Definitions["Booking"]
@@ -155,7 +165,11 @@ func verifyParsedPetStore(t testing.TB, doc *spec.Swagger) {
 	assertProperty(t, &mod, "string", "status", "", "Status")
 	prop, ok = mod.Properties["status"]
 	assert.True(t, ok)
-	assert.Equal(t, "The current status of the pet in the store.\navailable STATUS_AVAILABLE\npending STATUS_PENDING\nsold STATUS_SOLD", prop.Description)
+	assert.Equal(
+		t,
+		"The current status of the pet in the store.\navailable STATUS_AVAILABLE\npending STATUS_PENDING\nsold STATUS_SOLD",
+		prop.Description,
+	)
 	assert.Equal(t, []interface{}{"available", "pending", "sold"}, prop.Enum)
 
 	assertProperty(t, &mod, "string", "birthday", "date", "Birthday")
@@ -240,7 +254,11 @@ func verifyParsedPetStore(t testing.TB, doc *spec.Swagger) {
 	// listPets
 	assert.NotNil(t, op.Get)
 	assert.Equal(t, "Lists the pets known to the store.", op.Get.Summary)
-	assert.Equal(t, "By default it will only lists pets that are available for sale.\nThis can be changed with the status flag.", op.Get.Description)
+	assert.Equal(
+		t,
+		"By default it will only lists pets that are available for sale.\nThis can be changed with the status flag.",
+		op.Get.Description,
+	)
 	assert.Equal(t, "listPets", op.Get.ID)
 	assert.EqualValues(t, []string{"pets"}, op.Get.Tags)
 	assert.True(t, op.Get.Deprecated)

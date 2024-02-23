@@ -8,8 +8,8 @@ import (
 	flags "github.com/jessevdk/go-flags"
 	"github.com/stretchr/testify/require"
 
-	"github.com/go-swagger/go-swagger/cmd/swagger/commands/generate"
-	"github.com/go-swagger/go-swagger/generator/internal/gentest"
+	"github.com/thetreep/go-swagger/cmd/swagger/commands/generate"
+	"github.com/thetreep/go-swagger/generator/internal/gentest"
 )
 
 const (
@@ -55,27 +55,31 @@ func TestGenerateAndBuild(t *testing.T) {
 		},
 	}
 
-	t.Run("build client", func(t *testing.T) {
-		for name, toPin := range cases {
-			cas := toPin
+	t.Run(
+		"build client", func(t *testing.T) {
+			for name, toPin := range cases {
+				cas := toPin
 
-			t.Run(name, func(t *testing.T) {
-				t.Parallel()
-				spec := filepath.FromSlash(cas.spec)
+				t.Run(
+					name, func(t *testing.T) {
+						t.Parallel()
+						spec := filepath.FromSlash(cas.spec)
 
-				generated, err := os.MkdirTemp(filepath.Dir(spec), "generated")
-				require.NoErrorf(t, err, "TempDir()=%s", generated)
-				t.Cleanup(func() { _ = os.RemoveAll(generated) })
+						generated, err := os.MkdirTemp(filepath.Dir(spec), "generated")
+						require.NoErrorf(t, err, "TempDir()=%s", generated)
+						t.Cleanup(func() { _ = os.RemoveAll(generated) })
 
-				require.NoErrorf(t, newTestClient(spec, generated).Execute(nil), "Execute()=%s", err)
+						require.NoErrorf(t, newTestClient(spec, generated).Execute(nil), "Execute()=%s", err)
 
-				packages := filepath.Join(generated, "...")
+						packages := filepath.Join(generated, "...")
 
-				t.Run("should go get imports", gentest.GoExecInDir("", "get"))
-				t.Run("should build client", gentest.GoExecInDir("", "build", packages))
-			})
-		}
-	})
+						t.Run("should go get imports", gentest.GoExecInDir("", "get"))
+						t.Run("should build client", gentest.GoExecInDir("", "build", packages))
+					},
+				)
+			}
+		},
+	)
 }
 
 func newTestClient(input, output string) *generate.Client {

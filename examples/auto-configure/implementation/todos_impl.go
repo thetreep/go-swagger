@@ -7,8 +7,8 @@ import (
 
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/go-openapi/swag"
-	"github.com/go-swagger/go-swagger/examples/auto-configure/models"
-	"github.com/go-swagger/go-swagger/examples/auto-configure/restapi/operations/todos"
+	"github.com/thetreep/go-swagger/examples/auto-configure/models"
+	"github.com/thetreep/go-swagger/examples/auto-configure/restapi/operations/todos"
 )
 
 type TodosHandlerImpl struct {
@@ -25,10 +25,12 @@ func (i *TodosHandlerImpl) AddOne(params todos.AddOneParams, principal interface
 	newItem := params.Body
 	if newItem == nil {
 		return todos.NewAddOneDefault(http.StatusBadRequest).
-			WithPayload(&models.Error{
-				Code:    http.StatusBadRequest,
-				Message: &[]string{"Item Body is nil"}[0],
-			})
+			WithPayload(
+				&models.Error{
+					Code:    http.StatusBadRequest,
+					Message: &[]string{"Item Body is nil"}[0],
+				},
+			)
 	}
 	// assign new id
 	newItem.ID = i.idx
@@ -43,10 +45,12 @@ func (i *TodosHandlerImpl) DestroyOne(params todos.DestroyOneParams, principal i
 	defer i.lock.Unlock()
 	if _, ok := i.items[params.ID]; !ok {
 		return todos.NewDestroyOneDefault(http.StatusNotFound).
-			WithPayload(&models.Error{
-				Code:    http.StatusNotFound,
-				Message: &[]string{fmt.Sprintf("item with id %d is not found.", params.ID)}[0],
-			})
+			WithPayload(
+				&models.Error{
+					Code:    http.StatusNotFound,
+					Message: &[]string{fmt.Sprintf("item with id %d is not found.", params.ID)}[0],
+				},
+			)
 	}
 	delete(i.items, params.ID)
 	return todos.NewDestroyOneNoContent()
@@ -85,10 +89,12 @@ func (i *TodosHandlerImpl) UpdateOne(params todos.UpdateOneParams, principal int
 	if _, ok := i.items[params.ID]; !ok {
 		errStr := fmt.Sprintf("Item with id %v is not found", params.ID)
 		return todos.NewUpdateOneDefault(http.StatusNotFound).
-			WithPayload(&models.Error{
-				Code:    http.StatusNotFound,
-				Message: &errStr,
-			})
+			WithPayload(
+				&models.Error{
+					Code:    http.StatusNotFound,
+					Message: &errStr,
+				},
+			)
 	}
 	params.Body.ID = params.ID
 	i.items[params.ID] = params.Body

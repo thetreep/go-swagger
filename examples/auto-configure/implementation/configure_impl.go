@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/go-openapi/swag"
-	"github.com/go-swagger/go-swagger/examples/auto-configure/restapi/operations"
+	"github.com/thetreep/go-swagger/examples/auto-configure/restapi/operations"
 )
 
 type ConfigureImpl struct {
@@ -43,10 +43,12 @@ func (i *ConfigureImpl) SetupMiddlewares(handler http.Handler) http.Handler {
 }
 
 func (i *ConfigureImpl) SetupGlobalMiddleware(handler http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-		log.Printf("Received request on path: %v", req.URL.String())
-		handler.ServeHTTP(w, req)
-	})
+	return http.HandlerFunc(
+		func(w http.ResponseWriter, req *http.Request) {
+			log.Printf("Received request on path: %v", req.URL.String())
+			handler.ServeHTTP(w, req)
+		},
+	)
 }
 
 func (i *ConfigureImpl) CustomConfigure(api *operations.AToDoListApplicationAPI) {

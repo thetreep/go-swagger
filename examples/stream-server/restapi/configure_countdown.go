@@ -10,9 +10,9 @@ import (
 	errors "github.com/go-openapi/errors"
 	runtime "github.com/go-openapi/runtime"
 	middleware "github.com/go-openapi/runtime/middleware"
-	"github.com/go-swagger/go-swagger/examples/stream-server/biz"
+	"github.com/thetreep/go-swagger/examples/stream-server/biz"
 
-	"github.com/go-swagger/go-swagger/examples/stream-server/restapi/operations"
+	"github.com/thetreep/go-swagger/examples/stream-server/restapi/operations"
 )
 
 //go:generate swagger generate server --target .. --name Countdown --spec ../swagger.yml
@@ -36,17 +36,21 @@ func configureAPI(api *operations.CountdownAPI) http.Handler {
 	api.JSONProducer = runtime.JSONProducer()
 
 	myCounter := &biz.MyCounter{}
-	api.ElapseHandler = operations.ElapseHandlerFunc(func(params operations.ElapseParams) middleware.Responder {
-		if params.Length == 11 {
-			return operations.NewElapseForbidden()
-		}
-		return middleware.ResponderFunc(func(rw http.ResponseWriter, p runtime.Producer) {
-			f, _ := rw.(http.Flusher)
-			rw.WriteHeader(200)
-			_ = myCounter.Down(params.Length, &flushWriter{f: f, w: rw})
-		})
+	api.ElapseHandler = operations.ElapseHandlerFunc(
+		func(params operations.ElapseParams) middleware.Responder {
+			if params.Length == 11 {
+				return operations.NewElapseForbidden()
+			}
+			return middleware.ResponderFunc(
+				func(rw http.ResponseWriter, p runtime.Producer) {
+					f, _ := rw.(http.Flusher)
+					rw.WriteHeader(200)
+					_ = myCounter.Down(params.Length, &flushWriter{f: f, w: rw})
+				},
+			)
 
-	})
+		},
+	)
 
 	api.ServerShutdown = func() {}
 

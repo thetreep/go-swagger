@@ -7,9 +7,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/go-swagger/go-swagger/cmd/swagger/commands/generate"
 	flags "github.com/jessevdk/go-flags"
 	"github.com/stretchr/testify/assert"
+	"github.com/thetreep/go-swagger/cmd/swagger/commands/generate"
 )
 
 func TestGenerateModel(t *testing.T) {
@@ -29,27 +29,29 @@ func TestGenerateModel(t *testing.T) {
 
 	base := filepath.FromSlash("../../../../")
 	for i, spec := range specs {
-		_ = t.Run(spec, func(t *testing.T) {
-			path := filepath.Join(base, "fixtures/codegen", spec)
-			generated, err := os.MkdirTemp(filepath.Dir(path), "generated")
-			if err != nil {
-				t.Fatalf("TempDir()=%s", generated)
-			}
-			defer func() {
-				_ = os.RemoveAll(generated)
-			}()
-			m := &generate.Model{}
-			_, _ = flags.Parse(m)
-			if i == 0 {
-				m.Models.ExistingModels = "nonExisting"
-			}
-			m.Shared.Spec = flags.Filename(path)
-			m.Shared.Target = flags.Filename(generated)
+		_ = t.Run(
+			spec, func(t *testing.T) {
+				path := filepath.Join(base, "fixtures/codegen", spec)
+				generated, err := os.MkdirTemp(filepath.Dir(path), "generated")
+				if err != nil {
+					t.Fatalf("TempDir()=%s", generated)
+				}
+				defer func() {
+					_ = os.RemoveAll(generated)
+				}()
+				m := &generate.Model{}
+				_, _ = flags.Parse(m)
+				if i == 0 {
+					m.Models.ExistingModels = "nonExisting"
+				}
+				m.Shared.Spec = flags.Filename(path)
+				m.Shared.Target = flags.Filename(generated)
 
-			if err := m.Execute([]string{}); err != nil {
-				t.Error(err)
-			}
-		})
+				if err := m.Execute([]string{}); err != nil {
+					t.Error(err)
+				}
+			},
+		)
 	}
 }
 

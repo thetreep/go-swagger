@@ -14,18 +14,22 @@ func loadGo118ClassificationPkgsCtx(t testing.TB, extra ...string) *scanCtx {
 	if go118ClassificationCtx != nil {
 		return go118ClassificationCtx
 	}
-	sctx, err := newScanCtx(&Options{
-		Packages: append([]string{
-			"github.com/go-swagger/go-swagger/fixtures/goparsing/go118",
-		}, extra...),
-	})
+	sctx, err := newScanCtx(
+		&Options{
+			Packages: append(
+				[]string{
+					"github.com/thetreep/go-swagger/fixtures/goparsing/go118",
+				}, extra...,
+			),
+		},
+	)
 	require.NoError(t, err)
 	go118ClassificationCtx = sctx
 	return go118ClassificationCtx
 }
 
 func getGo118ClassificationModel(sctx *scanCtx, nm string) *entityDecl {
-	decl, ok := sctx.FindDecl("github.com/go-swagger/go-swagger/fixtures/goparsing/go118", nm)
+	decl, ok := sctx.FindDecl("github.com/thetreep/go-swagger/fixtures/goparsing/go118", nm)
 	if !ok {
 		return nil
 	}

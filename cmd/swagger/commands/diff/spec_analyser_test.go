@@ -8,8 +8,8 @@ import (
 	"testing"
 
 	"github.com/go-openapi/loads"
-	"github.com/go-swagger/go-swagger/cmd/swagger/commands/internal/cmdtest"
 	"github.com/stretchr/testify/require"
+	"github.com/thetreep/go-swagger/cmd/swagger/commands/internal/cmdtest"
 )
 
 func fixturePath(file string, parts ...string) string {
@@ -49,21 +49,23 @@ func TestDiffForVariousCombinations(t *testing.T) {
 
 	for i, tc := range testCases {
 		tc := tc
-		t.Run(tc.name, func(t *testing.T) {
-			diffs, err := getDiffs(tc.oldSpec, tc.newSpec)
-			require.NoError(t, err)
+		t.Run(
+			tc.name, func(t *testing.T) {
+				diffs, err := getDiffs(tc.oldSpec, tc.newSpec)
+				require.NoError(t, err)
 
-			out, err, warn := diffs.ReportAllDiffs(false)
-			require.NoError(t, err)
+				out, err, warn := diffs.ReportAllDiffs(false)
+				require.NoError(t, err)
 
-			if !cmdtest.AssertReadersContent(t, true, tc.expectedLines, out) {
-				t.Logf("unexpected content for fixture %q[%d] (file: %s)", tc.name, i, tc.expectedFile)
-			}
+				if !cmdtest.AssertReadersContent(t, true, tc.expectedLines, out) {
+					t.Logf("unexpected content for fixture %q[%d] (file: %s)", tc.name, i, tc.expectedFile)
+				}
 
-			if diffs.BreakingChangeCount() > 0 {
-				require.Error(t, warn)
-			}
-		})
+				if diffs.BreakingChangeCount() > 0 {
+					require.Error(t, warn)
+				}
+			},
+		)
 	}
 
 	require.Equalf(t, len(allTests), len(matches), "All test cases were not run. Remove filter")
@@ -97,7 +99,8 @@ func makeTestCases(t testing.TB, matches []string) []testCaseData {
 					oldSpec:       fixturePath(namePart, ".v1.json"),
 					newSpec:       fixturePath(namePart, ".v2.json"),
 					expectedLines: linesInFile(t, fixturePath(namePart, ".diff.txt")),
-				})
+				},
+			)
 		}
 		if _, err := os.Stat(fixturePath(namePart, ".v1.yml")); err == nil {
 			testCases = append(
@@ -106,7 +109,8 @@ func makeTestCases(t testing.TB, matches []string) []testCaseData {
 					oldSpec:       fixturePath(namePart, ".v1.yml"),
 					newSpec:       fixturePath(namePart, ".v2.yml"),
 					expectedLines: linesInFile(t, fixturePath(namePart, ".diff.txt")),
-				})
+				},
+			)
 		}
 	}
 	return testCases

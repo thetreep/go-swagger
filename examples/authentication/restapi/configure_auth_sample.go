@@ -10,9 +10,9 @@ import (
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/runtime/middleware"
 
-	"github.com/go-swagger/go-swagger/examples/authentication/models"
-	"github.com/go-swagger/go-swagger/examples/authentication/restapi/operations"
-	"github.com/go-swagger/go-swagger/examples/authentication/restapi/operations/customers"
+	"github.com/thetreep/go-swagger/examples/authentication/models"
+	"github.com/thetreep/go-swagger/examples/authentication/restapi/operations"
+	"github.com/thetreep/go-swagger/examples/authentication/restapi/operations/customers"
 )
 
 //go:generate swagger generate server --target ../../authentication --name AuthSample --spec ../swagger.yml --principal models.Principal
@@ -53,14 +53,18 @@ func configureAPI(api *operations.AuthSampleAPI) http.Handler {
 	// api.APIAuthorizer = security.Authorized()
 
 	if api.CustomersCreateHandler == nil {
-		api.CustomersCreateHandler = customers.CreateHandlerFunc(func(params customers.CreateParams, principal *models.Principal) middleware.Responder {
-			return middleware.NotImplemented("operation customers.Create has not yet been implemented")
-		})
+		api.CustomersCreateHandler = customers.CreateHandlerFunc(
+			func(params customers.CreateParams, principal *models.Principal) middleware.Responder {
+				return middleware.NotImplemented("operation customers.Create has not yet been implemented")
+			},
+		)
 	}
 	if api.CustomersGetIDHandler == nil {
-		api.CustomersGetIDHandler = customers.GetIDHandlerFunc(func(params customers.GetIDParams, principal *models.Principal) middleware.Responder {
-			return middleware.NotImplemented("operation customers.GetID has not yet been implemented")
-		})
+		api.CustomersGetIDHandler = customers.GetIDHandlerFunc(
+			func(params customers.GetIDParams, principal *models.Principal) middleware.Responder {
+				return middleware.NotImplemented("operation customers.GetID has not yet been implemented")
+			},
+		)
 	}
 
 	api.PreServerShutdown = func() {}

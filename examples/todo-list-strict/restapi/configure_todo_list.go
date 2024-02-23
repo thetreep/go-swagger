@@ -9,8 +9,8 @@ import (
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/runtime"
 
-	"github.com/go-swagger/go-swagger/examples/todo-list-strict/restapi/operations"
-	"github.com/go-swagger/go-swagger/examples/todo-list-strict/restapi/operations/todos"
+	"github.com/thetreep/go-swagger/examples/todo-list-strict/restapi/operations"
+	"github.com/thetreep/go-swagger/examples/todo-list-strict/restapi/operations/todos"
 )
 
 //go:generate swagger generate server --target ../../todo-list-strict --name TodoList --spec ../swagger.yml --strict-responders
@@ -46,24 +46,32 @@ func configureAPI(api *operations.TodoListAPI) http.Handler {
 	// Example:
 	// api.APIAuthorizer = security.Authorized()
 	if api.TodosAddOneHandler == nil {
-		api.TodosAddOneHandler = todos.AddOneHandlerFunc(func(params todos.AddOneParams, principal interface{}) todos.AddOneResponder {
-			return todos.AddOneNotImplemented()
-		})
+		api.TodosAddOneHandler = todos.AddOneHandlerFunc(
+			func(params todos.AddOneParams, principal interface{}) todos.AddOneResponder {
+				return todos.AddOneNotImplemented()
+			},
+		)
 	}
 	if api.TodosDestroyOneHandler == nil {
-		api.TodosDestroyOneHandler = todos.DestroyOneHandlerFunc(func(params todos.DestroyOneParams, principal interface{}) todos.DestroyOneResponder {
-			return todos.DestroyOneNotImplemented()
-		})
+		api.TodosDestroyOneHandler = todos.DestroyOneHandlerFunc(
+			func(params todos.DestroyOneParams, principal interface{}) todos.DestroyOneResponder {
+				return todos.DestroyOneNotImplemented()
+			},
+		)
 	}
 	if api.TodosFindHandler == nil {
-		api.TodosFindHandler = todos.FindHandlerFunc(func(params todos.FindParams, principal interface{}) todos.FindResponder {
-			return todos.FindNotImplemented()
-		})
+		api.TodosFindHandler = todos.FindHandlerFunc(
+			func(params todos.FindParams, principal interface{}) todos.FindResponder {
+				return todos.FindNotImplemented()
+			},
+		)
 	}
 	if api.TodosUpdateOneHandler == nil {
-		api.TodosUpdateOneHandler = todos.UpdateOneHandlerFunc(func(params todos.UpdateOneParams, principal interface{}) todos.UpdateOneResponder {
-			return todos.UpdateOneNotImplemented()
-		})
+		api.TodosUpdateOneHandler = todos.UpdateOneHandlerFunc(
+			func(params todos.UpdateOneParams, principal interface{}) todos.UpdateOneResponder {
+				return todos.UpdateOneNotImplemented()
+			},
+		)
 	}
 
 	api.PreServerShutdown = func() {}

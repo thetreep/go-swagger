@@ -9,8 +9,8 @@ import (
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/go-openapi/swag"
 
-	"github.com/go-swagger/go-swagger/examples/tutorials/custom-server/gen/restapi"
-	"github.com/go-swagger/go-swagger/examples/tutorials/custom-server/gen/restapi/operations"
+	"github.com/thetreep/go-swagger/examples/tutorials/custom-server/gen/restapi"
+	"github.com/thetreep/go-swagger/examples/tutorials/custom-server/gen/restapi/operations"
 )
 
 var portFlag = flag.Int("port", 3000, "Port to run this service on")
@@ -45,7 +45,8 @@ func main() {
 
 			greeting := fmt.Sprintf("Hello, %s!", name)
 			return operations.NewGetGreetingOK().WithPayload(greeting)
-		})
+		},
+	)
 
 	// serve API
 	if err := server.Serve(); err != nil {

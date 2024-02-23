@@ -6,8 +6,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/go-swagger/go-swagger/generator"
 	"github.com/stretchr/testify/assert"
+	"github.com/thetreep/go-swagger/generator"
 )
 
 func TestDeprecated(t *testing.T) {

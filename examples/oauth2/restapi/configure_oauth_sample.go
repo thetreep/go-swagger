@@ -13,10 +13,10 @@ import (
 	middleware "github.com/go-openapi/runtime/middleware"
 	"github.com/go-openapi/swag"
 
-	"github.com/go-swagger/go-swagger/examples/oauth2/restapi/operations"
-	"github.com/go-swagger/go-swagger/examples/oauth2/restapi/operations/customers"
+	"github.com/thetreep/go-swagger/examples/oauth2/restapi/operations"
+	"github.com/thetreep/go-swagger/examples/oauth2/restapi/operations/customers"
 
-	models "github.com/go-swagger/go-swagger/examples/oauth2/models"
+	models "github.com/thetreep/go-swagger/examples/oauth2/models"
 )
 
 //go:generate swagger generate server --target .. --name oauthSample --spec ../swagger.yml --principal models.Principal
@@ -57,24 +57,32 @@ func configureAPI(api *operations.OauthSampleAPI) http.Handler {
 	//
 	// Example:
 	// api.APIAuthorizer = security.Authorized()
-	api.GetAuthCallbackHandler = operations.GetAuthCallbackHandlerFunc(func(params operations.GetAuthCallbackParams) middleware.Responder {
-		token, err := callback(params.HTTPRequest)
-		if err != nil {
-			return middleware.NotImplemented("operation .GetAuthCallback error")
-		}
-		log.Println("Token", token)
-		return operations.NewGetAuthCallbackDefault(500).WithPayload(&models.Error{Code: 500, Message: swag.String(token)})
-	})
-	api.GetLoginHandler = operations.GetLoginHandlerFunc(func(params operations.GetLoginParams) middleware.Responder {
-		return login(params.HTTPRequest)
-	})
-	api.CustomersCreateHandler = customers.CreateHandlerFunc(func(params customers.CreateParams, principal *models.Principal) middleware.Responder {
-		return middleware.NotImplemented("operation customers.Create has not yet been implemented")
-	})
-	api.CustomersGetIDHandler = customers.GetIDHandlerFunc(func(params customers.GetIDParams, principal *models.Principal) middleware.Responder {
-		log.Println("hit customer API")
-		return middleware.NotImplemented("operation customers.GetID has not yet been implemented")
-	})
+	api.GetAuthCallbackHandler = operations.GetAuthCallbackHandlerFunc(
+		func(params operations.GetAuthCallbackParams) middleware.Responder {
+			token, err := callback(params.HTTPRequest)
+			if err != nil {
+				return middleware.NotImplemented("operation .GetAuthCallback error")
+			}
+			log.Println("Token", token)
+			return operations.NewGetAuthCallbackDefault(500).WithPayload(&models.Error{Code: 500, Message: swag.String(token)})
+		},
+	)
+	api.GetLoginHandler = operations.GetLoginHandlerFunc(
+		func(params operations.GetLoginParams) middleware.Responder {
+			return login(params.HTTPRequest)
+		},
+	)
+	api.CustomersCreateHandler = customers.CreateHandlerFunc(
+		func(params customers.CreateParams, principal *models.Principal) middleware.Responder {
+			return middleware.NotImplemented("operation customers.Create has not yet been implemented")
+		},
+	)
+	api.CustomersGetIDHandler = customers.GetIDHandlerFunc(
+		func(params customers.GetIDParams, principal *models.Principal) middleware.Responder {
+			log.Println("hit customer API")
+			return middleware.NotImplemented("operation customers.GetID has not yet been implemented")
+		},
+	)
 
 	api.ServerShutdown = func() {}
 

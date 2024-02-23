@@ -8,10 +8,10 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/go-swagger/go-swagger/cmd/swagger/commands/generate"
 	flags "github.com/jessevdk/go-flags"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/thetreep/go-swagger/cmd/swagger/commands/generate"
 )
 
 // Make sure generated code compiles
@@ -84,34 +84,36 @@ func TestGenerateCLI(t *testing.T) {
 	}
 
 	for _, tc := range testcases {
-		t.Run(tc.name, func(t *testing.T) {
-			path := filepath.Join(base, "fixtures/codegen", tc.spec)
-			generated, err := os.MkdirTemp(filepath.Dir(path), "generated")
-			if err != nil {
-				t.Fatalf("TempDir()=%s", generated)
-			}
-			defer func() {
-				_ = os.RemoveAll(generated)
-			}()
-			m := &generate.Cli{}
-			_, _ = flags.Parse(m)
-			m.Shared.Spec = flags.Filename(path)
-			m.Shared.Target = flags.Filename(generated)
-
-			err = m.Execute([]string{})
-			if tc.wantError {
-				assert.Error(t, err)
-			} else {
-				require.NoError(t, err)
-				// change to true to run go vet on generated files
-				runVet := false
-				if runVet {
-					vet := exec.Command("go", "vet", generated+"/...")
-					output, err := vet.CombinedOutput()
-					assert.NoError(t, err, string(output))
+		t.Run(
+			tc.name, func(t *testing.T) {
+				path := filepath.Join(base, "fixtures/codegen", tc.spec)
+				generated, err := os.MkdirTemp(filepath.Dir(path), "generated")
+				if err != nil {
+					t.Fatalf("TempDir()=%s", generated)
 				}
-			}
-		})
+				defer func() {
+					_ = os.RemoveAll(generated)
+				}()
+				m := &generate.Cli{}
+				_, _ = flags.Parse(m)
+				m.Shared.Spec = flags.Filename(path)
+				m.Shared.Target = flags.Filename(generated)
+
+				err = m.Execute([]string{})
+				if tc.wantError {
+					assert.Error(t, err)
+				} else {
+					require.NoError(t, err)
+					// change to true to run go vet on generated files
+					runVet := false
+					if runVet {
+						vet := exec.Command("go", "vet", generated+"/...")
+						output, err := vet.CombinedOutput()
+						assert.NoError(t, err, string(output))
+					}
+				}
+			},
+		)
 	}
 }
 
@@ -173,48 +175,50 @@ func TestVariousCli(t *testing.T) {
 		if runOnlyTest && !tc.runOnly {
 			continue
 		}
-		t.Run(tc.name, func(tt *testing.T) {
-			if tc.skip {
-				tt.Skip()
-			}
-			path := filepath.Join(base, tc.spec)
-			generated, err := os.MkdirTemp(filepath.Dir(path), "generated")
-			if err != nil {
-				t.Fatalf("TempDir()=%s", generated)
-			}
-			defer func() {
-				// only clean up if success, and leave the files around for developer to inspect
-				if !tt.Failed() {
-					if !tc.preserveFiles {
-						_ = os.RemoveAll(generated)
-					}
-				} else {
-					// stop all tests, since it will generate too many files to inspect
-					t.FailNow()
+		t.Run(
+			tc.name, func(tt *testing.T) {
+				if tc.skip {
+					tt.Skip()
 				}
-			}()
-			m := &generate.Cli{}
-			_, _ = flags.Parse(m)
-			m.Shared.Spec = flags.Filename(path)
-			m.Shared.Target = flags.Filename(generated)
-
-			err = m.Execute([]string{})
-			if tc.wantError {
-				assert.Error(tt, err)
-			} else {
-				require.NoError(tt, err)
-				// always run go vet on generated files
-				runVet := true
-				if runVet {
-					vet := exec.Command("go", "vet", generated+"/...")
-					output, err := vet.CombinedOutput()
-					if !tc.wantVetError {
-						assert.NoError(tt, err, string(output))
+				path := filepath.Join(base, tc.spec)
+				generated, err := os.MkdirTemp(filepath.Dir(path), "generated")
+				if err != nil {
+					t.Fatalf("TempDir()=%s", generated)
+				}
+				defer func() {
+					// only clean up if success, and leave the files around for developer to inspect
+					if !tt.Failed() {
+						if !tc.preserveFiles {
+							_ = os.RemoveAll(generated)
+						}
 					} else {
-						assert.Error(t, err)
+						// stop all tests, since it will generate too many files to inspect
+						t.FailNow()
+					}
+				}()
+				m := &generate.Cli{}
+				_, _ = flags.Parse(m)
+				m.Shared.Spec = flags.Filename(path)
+				m.Shared.Target = flags.Filename(generated)
+
+				err = m.Execute([]string{})
+				if tc.wantError {
+					assert.Error(tt, err)
+				} else {
+					require.NoError(tt, err)
+					// always run go vet on generated files
+					runVet := true
+					if runVet {
+						vet := exec.Command("go", "vet", generated+"/...")
+						output, err := vet.CombinedOutput()
+						if !tc.wantVetError {
+							assert.NoError(tt, err, string(output))
+						} else {
+							assert.Error(t, err)
+						}
 					}
 				}
-			}
-		})
+			},
+		)
 	}
 }

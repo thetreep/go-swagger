@@ -5,8 +5,8 @@ import (
 
 	"github.com/go-openapi/analysis"
 	"github.com/go-openapi/loads"
-	"github.com/go-swagger/go-swagger/cmd/swagger/commands/generate"
 	flags "github.com/jessevdk/go-flags"
+	"github.com/thetreep/go-swagger/cmd/swagger/commands/generate"
 )
 
 // FlattenSpec is a command that flattens a swagger document
@@ -31,13 +31,15 @@ func (c *FlattenSpec) Execute(args []string) error {
 		return err
 	}
 
-	flattenOpts := c.FlattenCmdOptions.SetFlattenOptions(&analysis.FlattenOpts{
-		// defaults
-		Minimal:      true,
-		Verbose:      true,
-		Expand:       false,
-		RemoveUnused: false,
-	})
+	flattenOpts := c.FlattenCmdOptions.SetFlattenOptions(
+		&analysis.FlattenOpts{
+			// defaults
+			Minimal:      true,
+			Verbose:      true,
+			Expand:       false,
+			RemoveUnused: false,
+		},
+	)
 	flattenOpts.BasePath = specDoc.SpecFilePath()
 	flattenOpts.Spec = analysis.New(specDoc.Spec())
 	if err := analysis.Flatten(*flattenOpts); err != nil {

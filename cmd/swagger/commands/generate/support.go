@@ -17,7 +17,7 @@ package generate
 import (
 	"log"
 
-	"github.com/go-swagger/go-swagger/generator"
+	"github.com/thetreep/go-swagger/generator"
 )
 
 // Support generates the supporting files
@@ -50,7 +50,8 @@ func (s *Support) generate(opts *generator.GenOpts) error {
 
 func (s Support) log(rp string) {
 
-	log.Println(`Generation completed!
+	log.Println(
+		`Generation completed!
 
 For this generation to compile you need to have some packages in go.mod:
 
@@ -58,7 +59,8 @@ For this generation to compile you need to have some packages in go.mod:
   * github.com/asaskevich/govalidator
   * github.com/jessevdk/go-flags
 
-You can get these now with: go mod tidy`)
+You can get these now with: go mod tidy`,
+	)
 }
 
 // Execute generates the supporting files file

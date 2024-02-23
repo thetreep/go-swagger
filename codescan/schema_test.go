@@ -89,7 +89,11 @@ func TestSchemaBuilder(t *testing.T) {
 
 	assert.Equal(t, spec.StringOrArray([]string{"object"}), schema.Type)
 	assert.Equal(t, "NoModel is a struct without an annotation.", schema.Title)
-	assert.Equal(t, "NoModel exists in a package\nbut is not annotated with the swagger model annotations\nso it should now show up in a test.", schema.Description)
+	assert.Equal(
+		t,
+		"NoModel exists in a package\nbut is not annotated with the swagger model annotations\nso it should now show up in a test.",
+		schema.Description,
+	)
 	assert.Len(t, schema.Required, 3)
 	assert.Len(t, schema.Properties, 12)
 
@@ -279,7 +283,7 @@ func TestSchemaBuilder(t *testing.T) {
 	require.NotNil(t, decl2)
 	require.NoError(t, (&schemaBuilder{decl: decl2, ctx: sctx}).Build(models))
 	msch, ok := models["order"]
-	pn := "github.com/go-swagger/go-swagger/fixtures/goparsing/classification/models"
+	pn := "github.com/thetreep/go-swagger/fixtures/goparsing/classification/models"
 	assert.True(t, ok)
 	assert.Equal(t, pn, msch.Extensions["x-go-package"])
 	assert.Equal(t, "StoreOrder", msch.Extensions["x-go-name"])
@@ -293,7 +297,7 @@ func TestSchemaBuilder_AddExtensions(t *testing.T) {
 	require.NoError(t, (&schemaBuilder{decl: decl, ctx: sctx}).Build(models))
 
 	msch, ok := models["order"]
-	pn := "github.com/go-swagger/go-swagger/fixtures/goparsing/classification/models"
+	pn := "github.com/thetreep/go-swagger/fixtures/goparsing/classification/models"
 	assert.True(t, ok)
 	assert.Equal(t, pn, msch.Extensions["x-go-package"])
 	assert.Equal(t, "StoreOrder", msch.Extensions["x-go-name"])
@@ -994,7 +998,7 @@ func TestAddExtension(t *testing.T) {
 }
 
 func getClassificationModel(sctx *scanCtx, nm string) *entityDecl {
-	decl, ok := sctx.FindDecl("github.com/go-swagger/go-swagger/fixtures/goparsing/classification/models", nm)
+	decl, ok := sctx.FindDecl("github.com/thetreep/go-swagger/fixtures/goparsing/classification/models", nm)
 	if !ok {
 		return nil
 	}

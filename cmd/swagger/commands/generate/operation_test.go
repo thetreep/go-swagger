@@ -9,8 +9,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/go-swagger/go-swagger/cmd/swagger/commands/generate"
 	flags "github.com/jessevdk/go-flags"
+	"github.com/thetreep/go-swagger/cmd/swagger/commands/generate"
 )
 
 func TestGenerateOperation(t *testing.T) {
@@ -30,28 +30,30 @@ func testGenerateOperation(t *testing.T, strict bool) {
 
 	base := filepath.FromSlash("../../../../")
 	for i, spec := range specs {
-		_ = t.Run(spec, func(t *testing.T) {
-			path := filepath.Join(base, "fixtures/codegen", spec)
-			generated, err := os.MkdirTemp(filepath.Dir(path), "generated")
-			if err != nil {
-				t.Fatalf("TempDir()=%s", generated)
-			}
-			defer func() {
-				_ = os.RemoveAll(generated)
-			}()
-			m := &generate.Operation{}
-			if i == 0 {
-				m.Shared.CopyrightFile = flags.Filename(filepath.Join(base, "LICENSE"))
-			}
-			_, _ = flags.ParseArgs(m, []string{"--name=listTasks"})
-			m.Shared.Spec = flags.Filename(path)
-			m.Shared.Target = flags.Filename(generated)
-			m.Shared.StrictResponders = strict
+		_ = t.Run(
+			spec, func(t *testing.T) {
+				path := filepath.Join(base, "fixtures/codegen", spec)
+				generated, err := os.MkdirTemp(filepath.Dir(path), "generated")
+				if err != nil {
+					t.Fatalf("TempDir()=%s", generated)
+				}
+				defer func() {
+					_ = os.RemoveAll(generated)
+				}()
+				m := &generate.Operation{}
+				if i == 0 {
+					m.Shared.CopyrightFile = flags.Filename(filepath.Join(base, "LICENSE"))
+				}
+				_, _ = flags.ParseArgs(m, []string{"--name=listTasks"})
+				m.Shared.Spec = flags.Filename(path)
+				m.Shared.Target = flags.Filename(generated)
+				m.Shared.StrictResponders = strict
 
-			if err := m.Execute([]string{}); err != nil {
-				t.Error(err)
-			}
-		})
+				if err := m.Execute([]string{}); err != nil {
+					t.Error(err)
+				}
+			},
+		)
 	}
 }
 

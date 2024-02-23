@@ -10,10 +10,10 @@ import (
 
 	"testing"
 
-	"github.com/go-swagger/go-swagger/cmd/swagger/commands/diff"
-	"github.com/go-swagger/go-swagger/cmd/swagger/commands/internal/cmdtest"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/thetreep/go-swagger/cmd/swagger/commands/diff"
+	"github.com/thetreep/go-swagger/cmd/swagger/commands/internal/cmdtest"
 )
 
 func fixturePath(file string, parts ...string) string {
@@ -48,33 +48,35 @@ func TestDiffForVariousCombinations(t *testing.T) {
 
 	for i, tc := range testCases {
 		tc := tc
-		t.Run(tc.name, func(t *testing.T) {
-			cmd := DiffCommand{}
-			cmd.Args.OldSpec = tc.oldSpec
-			cmd.Args.NewSpec = tc.newSpec
-			diffs, err := cmd.getDiffs()
+		t.Run(
+			tc.name, func(t *testing.T) {
+				cmd := DiffCommand{}
+				cmd.Args.OldSpec = tc.oldSpec
+				cmd.Args.NewSpec = tc.newSpec
+				diffs, err := cmd.getDiffs()
 
-			if tc.expectedError {
-				// edge cases with error
-				require.Error(t, err)
-				return
-			}
-			require.NoError(t, err)
+				if tc.expectedError {
+					// edge cases with error
+					require.Error(t, err)
+					return
+				}
+				require.NoError(t, err)
 
-			out, err, warn := diffs.ReportAllDiffs(false)
-			require.NoError(t, err)
+				out, err, warn := diffs.ReportAllDiffs(false)
+				require.NoError(t, err)
 
-			// breaking changes reported with a warning
-			if tc.expectedWarning {
-				assert.Error(t, warn)
-			} else {
-				assert.NoError(t, warn)
-			}
+				// breaking changes reported with a warning
+				if tc.expectedWarning {
+					assert.Error(t, warn)
+				} else {
+					assert.NoError(t, warn)
+				}
 
-			if !cmdtest.AssertReadersContent(t, true, tc.expectedLines, out) {
-				t.Logf("unexpected content for fixture %q[%d] (file: %s)", tc.name, i, tc.expectedFile)
-			}
-		})
+				if !cmdtest.AssertReadersContent(t, true, tc.expectedLines, out) {
+					t.Logf("unexpected content for fixture %q[%d] (file: %s)", tc.name, i, tc.expectedFile)
+				}
+			},
+		)
 	}
 }
 
@@ -92,12 +94,13 @@ func TestDiffReadIgnores(t *testing.T) {
 	require.NoError(t, err)
 	require.True(t, len(ignores) > 0)
 
-	isIn := diff.SpecDifference{DifferenceLocation: diff.DifferenceLocation{
-		Method:   "get",
-		Response: 200,
-		URL:      "/b/",
-		Node:     &diff.Node{Field: "Body", TypeName: "A1", IsArray: true, ChildNode: &diff.Node{Field: "personality", TypeName: "string"}},
-	},
+	isIn := diff.SpecDifference{
+		DifferenceLocation: diff.DifferenceLocation{
+			Method:   "get",
+			Response: 200,
+			URL:      "/b/",
+			Node:     &diff.Node{Field: "Body", TypeName: "A1", IsArray: true, ChildNode: &diff.Node{Field: "personality", TypeName: "string"}},
+		},
 		Code:          diff.DeletedEnumValue,
 		Compatibility: diff.NonBreaking,
 		DiffInfo:      "crazy",
@@ -266,16 +269,18 @@ func makeTestCases(t testing.TB, matches []string) []testCaseData {
 				expectedLines:   linesInFile(t, fixturePath(namePart, ".diff.txt")),
 				expectedFile:    fixturePath(namePart, ".diff.txt"), // only for debugging failed tests
 				expectedWarning: hasFixtureBreaking(namePart),
-			})
+			},
+		)
 	}
 
 	// edge cases with errors
-	testCases = append(testCases, testCaseData{
-		name:          "failure to load old spec",
-		oldSpec:       "nowhere.json",
-		newSpec:       fixturePath("enum", ".v2.json"),
-		expectedError: true,
-	},
+	testCases = append(
+		testCases, testCaseData{
+			name:          "failure to load old spec",
+			oldSpec:       "nowhere.json",
+			newSpec:       fixturePath("enum", ".v2.json"),
+			expectedError: true,
+		},
 		testCaseData{
 			name:          "failure to load new spec",
 			oldSpec:       fixturePath("enum", ".v1.json"),
